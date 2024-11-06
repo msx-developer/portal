@@ -1,5 +1,5 @@
 {
-    "name": "msx/portal",
+    "name": "msx-developer/portal",
     "description": "Pacote simples para listagem dos dados de um portal",
     "type": "library",
     "autoload": {
