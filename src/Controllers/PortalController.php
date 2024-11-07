@@ -4,17 +4,19 @@ namespace Msx\Portal\Controllers;
 
 use Msx\Portal\Models\Matia;
 use Msx\Portal\Models\Sesit;
-use SebastianBergmann\Comparator\Comparator;
+use Msx\Portal\Models\Site;
 
 class PortalController 
 {
     private $matia;
     private $sesit;
+    private $site;
 
     public function __construct()
     {
         $this->matia = new Matia();
         $this->sesit = new Sesit();
+        $this->site = new Site();
     }
     
     public function getMaterias( int|array $id ) {
@@ -37,11 +39,23 @@ class PortalController
                 $matias[$key]['ds_matia_grata'] = isset($publis[$indice]['ds_publi_grata']) ? $publis[$indice]['ds_publi_grata'] : $value['ds_matia_grata'];
                 $matias[$key]['ds_matia_chape'] = isset($publis[$indice]['ds_publi_chape']) ? $publis[$indice]['ds_publi_chape'] : $value['ds_matia_chape'];
 
-                $matias[$key]['mareps'] = $this->sesit->getMareps($publis[$indice]['cd_publi']);
+                if(isset($publis[$indice]['cd_publi'])) 
+                    $matias[$key]['mareps'] = $this->sesit->getMareps($publis[$indice]['cd_publi']);
+
                 $matias[$key]['ds_matia_link'] = isset($matias[$key]['ds_matia_link']) ? $matias[$key]['ds_matia_link'] :  $matias[$key]['site'][0]['ds_poral_url'] . $matias[$key]['ds_matia_path'];
             }
         }
         
         return $matias;
-    } 
+    }
+
+    public function getSecoes($cd_site) {
+        return $this->sesit->getSesits($cd_site);
+    }
+
+    public function getSites($id = null) {
+        if($id)
+            return $this->site->find($id);
+        return $this->site->getSites();
+    }
 }

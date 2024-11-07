@@ -65,55 +65,59 @@ class MateriaHelper {
             $posFim = strpos($ds_matia, "</tinymce>", $posIni);
             
             $tagContent = $tetagsContent[$keyOp];
-            
-            $tag = $tetags[intval($tagContent['cd_tetag'])];
-            
-            switch ($modelo) {
-                case 'amp':
-                    $templateTag = $tag['ds_tetag_tag_amp'];
-                    break;
-                case 'mobile':
-                    $templateTag = $tag['ds_tetag_tag_mobile'];
-                    break;
-                case 'ia':
-                    $templateTag = $tag['ds_tetag_tag_ia'];
-                    break;
-                default:
-                    $templateTag = $tag['ds_tetag_tag_html'];
-                    break;
-            }
 
-            if($tag['id_tetag_templ_tipo'] == '1'){ //smarty              
-                if($tagContent['id_tetag_galer'] == '1'){
-                     if(count($tagContent['midias']) > 0) {  
-                        foreach ( $tagContent['midias'] as $keyMidias => $valueMidias) {
-                            $tagContent['midias'][$keyMidias] = $matia->getMidiasByMidias($valueMidias);
+            if(isset($tagContent['cd_tetag']) == false || $tagContent['cd_tetag'] == "") {                
+                $ds_matia = substr_replace($ds_matia, "", $posIni, $posFim - $posIni);
+            } else {
+                $tag = $tetags[intval($tagContent['cd_tetag'])];
+                
+                switch ($modelo) {
+                    case 'amp':
+                        $templateTag = $tag['ds_tetag_tag_amp'];
+                        break;
+                    case 'mobile':
+                        $templateTag = $tag['ds_tetag_tag_mobile'];
+                        break;
+                    case 'ia':
+                        $templateTag = $tag['ds_tetag_tag_ia'];
+                        break;
+                    default:
+                        $templateTag = $tag['ds_tetag_tag_html'];
+                        break;
+                }
+    
+                if($tag['id_tetag_templ_tipo'] == '1'){ //smarty              
+                    if($tagContent['id_tetag_galer'] == '1'){
+                         if(count($tagContent['midias']) > 0) {  
+                            foreach ( $tagContent['midias'] as $keyMidias => $valueMidias) {
+                                $tagContent['midias'][$keyMidias] = $matia->getMidiasByMidias($valueMidias);
+                            }
                         }
                     }
-                }
-                if($tagContent['matias'] > 0) {
-                    foreach ( $tagContent['matias'] as $keymatias => $valuematias) {
-                        $mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]]);
-                        $mapSite = $matia->getSite($valuematias);
-                        if($mapMatia['cd_midia'] != "")
-                            $mapMidia = $matia->getMidiasByMidias($mapMatia['cd_midia']);
-                        $tagContent['matias'][$keymatias] = $mapMatia;
-                        $tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
-                        $tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
-                        $tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) ) ? $mapMidia['ds_midia_link'] : '';
+                    if($tagContent['matias'] > 0) {
+                        foreach ( $tagContent['matias'] as $keymatias => $valuematias) {
+                            $mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]]);
+                            $mapSite = $matia->getSite($valuematias);
+                            if($mapMatia['cd_midia'] != "")
+                                $mapMidia = $matia->getMidiasByMidias($mapMatia['cd_midia']);
+                            $tagContent['matias'][$keymatias] = $mapMatia;
+                            $tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
+                            $tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
+                            $tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) ) ? $mapMidia['ds_midia_link'] : '';
+                        }
+                    }
+                    $smarty->clearCache("string:" . $templateTag);
+                    $smarty->caching = false;
+                    $smarty->assign("item", $tagContent);
+                    $smarty->assign("conteudos", $tagContent["matias"]);
+                    $templateTag = $smarty->fetch("string:" . $templateTag);
+                }else{
+                    foreach($tagContent as $tagContentKey => $tagContentValue){
+                        $templateTag = str_replace("%{$tagContentKey}%", $tagContentValue, $templateTag);
                     }
                 }
-                $smarty->clearCache("string:" . $templateTag);
-                $smarty->caching = false;
-                $smarty->assign("item", $tagContent);
-                $smarty->assign("conteudos", $tagContent["matias"]);
-                $templateTag = $smarty->fetch("string:" . $templateTag);
-            }else{
-                foreach($tagContent as $tagContentKey => $tagContentValue){
-                    $templateTag = str_replace("%{$tagContentKey}%", $tagContentValue, $templateTag);
-                }
-            }
-            $ds_matia = str_replace(substr($ds_matia, $posIni, intval($posFim) - intval($posIni)), $templateTag, $ds_matia);
+                $ds_matia = str_replace(substr($ds_matia, $posIni, intval($posFim) - intval($posIni)), $templateTag, $ds_matia);                
+            }            
         }
         return $ds_matia;
     }

@@ -35,4 +35,13 @@ $portal = new \Msx\Portal\Controllers\PortalController();
 $map = $portal->getMaterias([1159146]);
 ```
 
+No exemplo abaixo um site é listado contendo os dados do mesmo, suas seções e as matérias das seções
 
+```php
+$cod_site = 278;
+$portal = new \Msx\Portal\Controllers\PortalController();
+$dados_site = $portal->getSites($cod_site);
+$secoes_site = $portal->getSecoes($cod_site);
+foreach ($secoes_site as $key => $value) 
+    $secoes_site[$key]['noticias'] = $portal->getMateriasSesit($value['cd_sesit']);
+```

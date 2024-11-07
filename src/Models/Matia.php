@@ -47,6 +47,9 @@ class Matia {
 
     public function getMatias($params = []) {
         
+        if(isset($params['cd_matia']) == false || $params['cd_matia'] == null || count($params['cd_matia']) == 0) 
+            return [];
+
         $ids     = $params['cd_matia']; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
        
@@ -55,7 +58,6 @@ class Matia {
         WHERE matia.cd_matia IN ({$inQuery})";
 
         $sql = $this->queryMatia($sql, $params);
-
         $map = (array) $this->connection->fetchAll($sql, $ids);
 
         if(isset($map) && count($map) > 0 && count($this->with) > 0){
@@ -324,6 +326,9 @@ class Matia {
 
     public function getMidiasByMidias($cd_midia_list){
 
+        if(isset($cd_midia_list) == false || count($cd_midia_list) == 0) 
+            return [];
+        
         $ids     = $cd_midia_list; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
 
