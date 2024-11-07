@@ -10,7 +10,7 @@ The Msx Portal project provides a simple and efficient way to interact with the 
 To install the Msx Portal library, run the following command in your terminal:
 
 ```bash
-composer require msx/portal --with-dependencies
+composer require msx-developer/portal --with-dependencies
 ```
 
 ## Configure

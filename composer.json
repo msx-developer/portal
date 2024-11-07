@@ -13,18 +13,10 @@
             "email": "suporte@msxcontents.com"
         }
     ],
-    "require-dev": {
-        "pestphp/pest": "^3.5"
-    },
     "require": {
         "php": ">=7.4",
         "ext-pdo": "*",
         "ext-json": "*",
         "smarty/smarty": "^5.4"
-    },
-    "config": {
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
     }
 }
