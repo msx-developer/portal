@@ -1,21 +1,20 @@
 # Msx Portal
-======================
 
-## Description
+## Descrição
 
-The Msx Portal project provides a simple and efficient way to interact with the Msx Portal. This library allows you to easily retrieve and manipulate data from the portal.
+O projeto Msx Portal fornece uma maneira simples e eficiente de interagir com o Msx Portal. Essa biblioteca permite que você recupere e manipule facilmente dados do portal.
 
-## Installation
+## Instalação
 
-To install the Msx Portal library, run the following command in your terminal:
+Para instalar a biblioteca do Msx Portal, execute o seguinte comando em seu terminal:
 
 ```bash
 composer require msx-developer/portal --with-dependencies
 ```
 
-## Configure
+## Configurar
 
-Add in ENV file the connection configures
+Adicione no arquivo ENV com as configurações de conexão de banco de dados
 
 ```
 DB_MSX_CONNECTION=mysql
@@ -27,15 +26,13 @@ DB_MSX_PASSWORD=pass
 DB_MSX_PORTAL=1
 ```
 
-## Example Usage
+## Exemplo de uso
 
-Here is an example of how to use the Msx Portal library:
+Este exemplo cria uma nova instância da classe PortalController e a usa para recuperar uma lista de materias, no caso a de id 1159146. Os dados resultantes são armazenados na variável $map.
 
 ```php
 $portal = new \Msx\Portal\Controllers\PortalController();
 $map = $portal->getMaterias([1159146]);
 ```
 
-This example creates a new instance of the PortalController class and uses it to retrieve a list of materias with the ID 1159146. The resulting data is stored in the $map variable.
 
-Note: Make sure to replace the ID 1159146 with the actual ID of the materia you want to retrieve.
