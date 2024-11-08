@@ -10,9 +10,12 @@
     "authors": [
         {
             "name": "MSX Contents",
-            "email": "suporte@msxcontents.com"
+            "email": "suporte@msxcontents.com",
+            "homepage": "https://www.msxcontents.com.br/",
+            "role": "Developer"
         }
     ],
+    "license": "MIT",
     "require": {
         "php": ">=7.1",
         "ext-pdo": "*",
