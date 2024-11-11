@@ -24,6 +24,7 @@ DB_MSX_DATABASE=portal_db
 DB_MSX_USERNAME=user
 DB_MSX_PASSWORD=pass
 DB_MSX_PORTAL=1
+DB_MSX_URL_ADMIN=http://admin.local/
 ```
 
 ## Exemplo de uso
