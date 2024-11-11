@@ -4,6 +4,8 @@ namespace Msx\Portal\Models;
 
 use Msx\Portal\Database\Connection;
 
+use Msx\Portal\Helpers\FiveliveHelper;
+
 class Site { 
 
     private $connection;
@@ -18,6 +20,10 @@ class Site {
 
         if($map) {
             $map['tpblos'] = $this->getTpblos($map['cd_site']);
+            $map['fivelive'] = array(
+                'scriptTop' => FiveliveHelper::scriptTop(),
+                'scriptBottom' =>FiveliveHelper::scriptBottom($id),
+            );
         }
 
         return $map;
@@ -26,6 +32,8 @@ class Site {
     public function getSites() {
         $sql = 'SELECT * FROM site INNER JOIN poral ON (site.cd_poral = poral.cd_poral) WHERE site.cd_poral = ?';
         $map = (array) $this->connection->fetchAll($sql, [$_SESSION['msx']['portal']]);
+
+        return $map;
     }
 
     public function getTpblos($cd_site) {

@@ -45,3 +45,64 @@ $secoes_site = $portal->getSecoes($cod_site);
 foreach ($secoes_site as $key => $value) 
     $secoes_site[$key]['noticias'] = $portal->getMateriasSesit($value['cd_sesit']);
 ```
+
+Habilitando o fivelive, para tal, as funções usadas serão:
+
+ - Barra de botões da notícias, parametro é o array com os dados de uma notícia
+```php
+{!! $fivelive::fivelive($noticia) !!} 
+```
+ - Barra edição do texto da notícia, para o parâmetro do nome do campo os valores são: ds_matia_titlo, ds_matia_assun, ds_matia_chape, ds_marep_titlo
+```php
+{!! $fivelive::fivelive($noticia, "ds_matia_titlo") !!} 
+```
+
+ - Atributos de imagem para edição via fivelive, os parâmetros são: código da mídia, o array das mídias da matéria e o código da publicação da notícia
+```php
+{{ $fivelive::getMidia($midia['cd_midia'], $midias, ($noticia['cd_publi'] ?? null) ) }} 
+```
+
+Exemplo completo com a implementação dos itens listados acima:
+
+```php
+<div class="rounded overflow-hidden shadow-lg flex flex-col w-80 mx-8" data-mode="load">    
+{!! $fivelive::fivelive($noticia) !!}
+    <div class="relative"> 
+        <a href="http://dev.news.local:81/noticia/{{ $noticia['cd_matia'] }}">
+        @if($noticia['cd_midia'] != "" && isset($noticia['midmas'][$noticia['cd_midia']]))
+        @php 
+            $midias = $noticia['midmas'][$noticia['cd_midia']]['midias']; 
+            $midia = isset($midias['480x320']) ? $midias['480x320'] : end($midias);
+        @endphp
+           
+            <img class="w-full" src="{{ $midia['ds_midia_link'] }}" alt="{{ $midia['ds_midia'] }}" {{ $fivelive::getMidia($midia['cd_midia'], $midias, ($noticia['cd_publi'] ?? null) ) }}>
+        @endif
+        </a>
+        <a href="http://dev.news.local:81/noticia/{{ $noticia['cd_matia'] }}">
+            <div class="text-xs absolute top-0 left-0 bg-indigo-600 px-4 py-2 text-white mt-3 mr-3 hover:bg-white hover:text-indigo-600 transition duration-500 ease-in-out">
+            {!! $fivelive::fivelive($noticia, "ds_matia_assun") !!}
+            </div>
+        </a>
+    </div>
+    <div class="px-6 py-4 mb-auto">
+        <a href="http://dev.news.local:81/noticia/{{ $noticia['cd_matia'] }}" class="font-medium text-lg inline-block hover:text-indigo-600 transition duration-500 ease-in-out inline-block mb-2">
+            {!! $fivelive::fivelive($noticia, "ds_matia_titlo") !!}
+        </a>
+        <p class="text-gray-500"> {!! $fivelive::fivelive($noticia, "ds_matia_chape") !!} </p>
+    </div>
+    <div class="px-6 py-3 flex flex-row items-center justify-between bg-gray-100">
+        <span href="#" class="py-1 text-xs font-regular text-gray-900 mr-1 flex flex-row items-center">
+            <svg height="13px" width="13px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                <g>
+                    <g>
+                        <path d="M256,0C114.837,0,0,114.837,0,256s114.837,256,256,256s256-114.837,256-256S397.163,0,256,0z M277.333,256 c0,11.797-9.536,21.333-21.333,21.333h-85.333c-11.797,0-21.333-9.536-21.333-21.333s9.536-21.333,21.333-21.333h64v-128 c0-11.797,9.536-21.333,21.333-21.333s21.333,9.536,21.333,21.333V256z">
+                        </path>
+                    </g>
+                </g>
+            </svg>
+            <span class="ml-1">{{ date('d/m/Y H:i', strtotime($noticia['dt_matia_publi'])) }}</span>
+        </span>
+    </div>
+</div>
+
+```

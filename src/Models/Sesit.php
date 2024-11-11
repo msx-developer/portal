@@ -14,7 +14,12 @@ class Sesit {
     }
 
     public function find($id) {
-        $sql = 'SELECT * FROM sesit LEFT JOIN templ ON (sesit.cd_templ = templ.cd_templ) WHERE sesit.cd_sesit = ?';
+        $fivelive = 'false';
+        if(isset($_REQUEST['fivelive']) && $_REQUEST['fivelive'] == '1') {
+            $fivelive = 'true';
+        } 
+
+        $sql = "SELECT *, AS {$fivelive} AS 'fivelive' FROM sesit LEFT JOIN templ ON (sesit.cd_templ = templ.cd_templ) WHERE sesit.cd_sesit = ?";
         return (array) $this->connection->fetchAll($sql, [$id]);
     }
 
@@ -43,10 +48,15 @@ class Sesit {
             ORDER BY publi.dt_publi_ini DESC ";
         }
 
+        $page = 0;
+        if(isset($_REQUEST['p'])) {
+            $page = (($_REQUEST['p'] == "" || $_REQUEST['p'] == 0 ? 0 : $_REQUEST['p']) - 1);
+        }
+
         if(isset($sesit['qt_sesit_matia']) && $sesit['qt_sesit_matia'] != "" && $sesit['qt_sesit_matia'] > 0)
             $sql .= " LIMIT " . $sesit['qt_sesit_matia'];
         elseif(isset($sesit['qt_sesit_repag']) && $sesit['qt_sesit_repag'] != "" && $sesit['qt_sesit_repag'] > 0)
-            $sql .= " LIMIT " . (($_REQUEST['p'] == "" || $_REQUEST['p'] == 0 ? 1 : $_REQUEST['p']) - 1) * $sesit['qt_sesit_repag'] . ", " . $sesit['qt_sesit_repag'];
+            $sql .= " LIMIT " . $page * $sesit['qt_sesit_repag'] . ", " . $sesit['qt_sesit_repag'];
 
         if($sesit['ds_sesit_sql'] != "")
             $map = (array) $this->connection->fetchAll($sql);
@@ -73,6 +83,11 @@ class Sesit {
     }
 
     public function getSesits($cd_site) {
+        $fivelive = false;
+        if(isset($_REQUEST['fivelive']) && $_REQUEST['fivelive'] == '1') {
+            $fivelive = true;
+        } 
+
         $sql = "SELECT sesit.*
         FROM site 
             INNER JOIN sesit ON (site.cd_site = sesit.cd_site )
@@ -85,6 +100,7 @@ class Sesit {
             foreach($map as $key => $value){
                 $map[$key]['setips'] = $this->getSetips($value['cd_sesit']);
                 $map[$key]['putips'] = $this->getPutips($value['cd_sesit']);
+                $map[$key]['fivelive'] = $fivelive;
             }            
         }
         return $map;
