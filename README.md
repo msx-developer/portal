@@ -107,3 +107,75 @@ Exemplo completo com a implementação dos itens listados acima:
 </div>
 
 ```
+
+ - Para habilitar os scripts que tornam a barra de botões funcionais são necessários a exibição dos dos atributos listados abaixo:
+    - Na tag head do html
+
+    ```php
+    {!! $site['fivelive']['scriptTop'] !!}
+    ```
+
+    - Antes do fim da tag body
+
+    ```php
+    {!! $site['fivelive']['scriptBottom'] !!}
+    ```
+
+    - Exemplo completo
+    ```php
+    //site.blade.php
+    @extends('layout.news')
+
+    @section('content') 
+
+    @if( isset($secoes) && is_array($secoes) && count($secoes) > 0)
+        @foreach($secoes as $secao){{dd($secao);}}
+    <section class="p-4 lg:p-8 dark:bg-gray-100 dark:text-gray-800">
+        @if(isset($fivelive))
+        {!! $fivelive::fivelive($secao) !!}
+        @endif
+        <h4 class="text-2xl font-bold text-gray-800 text-center p-3 text-uppercase border-blueGray-300">{{$secao['nm_sesit']}}</h4>        
+    </section>
+        @endforeach
+    @endif
+
+    @endsection
+
+    @section('scriptTop')
+    @if(isset($site) && isset($site['fivelive']))
+    {!! $site['fivelive']['scriptTop'] !!}
+    @endif
+    @endsection
+
+    @section('scriptBottom')
+    @if(isset($site) && isset($site['fivelive']))
+    {!! $site['fivelive']['scriptBottom'] !!}
+    @endif
+    @endsection
+    ```
+
+    ```php
+    //layout/news.blade.php
+
+    <!DOCTYPE html>
+    <html>
+
+    <head lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{{ config('app.name') }}</title>
+        <meta name="description" content="">
+        <meta name="author" content="name">
+        <meta name="keywords" content="keywords,here">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="">
+        @yield('scriptTop')
+    </head> 
+
+    <body class="bg-gray-200 font-sans leading-normal tracking-normal">
+        @yield('content')
+        @yield('scriptBottom')
+    </body>
+    </html>
+    ```
