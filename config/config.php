@@ -1,6 +1,6 @@
 <?php
 
-$host = $dbname = $user = $password = $type = $port = $portal = null;
+$host = $dbname = $user = $password = $type = $port = $portal =  $url_admin = null;
 
 if(function_exists('getenv')) {
     $host = getenv('DB_MSX_HOST');
@@ -25,7 +25,8 @@ return [
         'user' => $user,
         'password' => $password,
         'type' => $type ?? 'mysql',
-        'port' => $port ?? '3306'
+        'port' => $port ?? '3306',
+        'charset' => 'utf8'
     ],
     'portal' => $portal,
     'url_admin' => $url_admin

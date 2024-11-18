@@ -39,19 +39,24 @@ class Connection{
             throw new \Exception('Database password not found');
         }     
 
+        if (!isset($config['database']['port'])) {        
+            throw new \Exception('Database password not found');
+        }  
+
         if(!isset($config['portal'])) {
             throw new \Exception('Portal not found');
         }
                 
         extract($config['database']);
         
-        $dsn = "{$type}:dbname={$dbname};host={$host}";
+        $dsn = "{$type}:dbname={$dbname};host={$host};port={$port};charset={$charset}"; 
         $user = $user;
         $password = $password;
 
         try {
             $this->pdo = new PDO($dsn, $user, $password);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->exec("set names utf8");
         } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }

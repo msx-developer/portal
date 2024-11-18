@@ -98,8 +98,8 @@ class Sesit {
 
         if(count($map) > 0){
             foreach($map as $key => $value){
-                $map[$key]['setips'] = $this->getSetips($value['cd_sesit']);
-                $map[$key]['putips'] = $this->getPutips($value['cd_sesit']);
+                $map[$key]['setips'] = $this->getSetips($value['cd_setem']);
+                $map[$key]['putips'] = $this->getPutips($value['cd_setem']);
                 $map[$key]['fivelive'] = $fivelive;
             }            
         }
