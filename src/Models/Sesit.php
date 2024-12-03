@@ -27,7 +27,7 @@ class Sesit {
         $sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$cd_sesit])[0];
         
         if($sesit['ds_sesit_sql'] != ""){
-            $sql = $sesit['ds_sesit_sql'];            
+            $sql = $this->sqlReplaces($sesit);           
         } else {
             $sql = "SELECT *
             FROM publi 
@@ -64,6 +64,21 @@ class Sesit {
             $map = (array) $this->connection->fetchAll($sql, [$cd_sesit]);
 
         return $map;
+    }
+
+    public function sqlReplaces($sesit) {
+        $sql = $sesit['ds_sesit_sql'];
+        $codSite = $sesit['cd_site'];
+        $dados = $this->connection->fetchAll('SELECT * FROM site WHERE cd_site = ?', [$codSite])[0];
+        
+        $dados['data_ini'] =  "'" . date("Y-m-d H:i:s", strtotime("-12 months")) . "'";
+        $dados['data_fim'] =  "'" . date("Y-m-d H:i:s") . "'";
+        
+        foreach ($dados as $key => $v) {
+            if(!is_null($v))
+			    $sql = str_replace("%" . $key . "%", $v, $sql);
+		}
+        return $sql;
     }
 
     public function getMareps($cd_publi){
