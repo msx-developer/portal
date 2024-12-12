@@ -3,6 +3,7 @@
 namespace Msx\Portal\Helpers;
 
 class GenericMapHelper {
+
     public static function getMatia($params = array()) {
         return array(
             "0" => array(

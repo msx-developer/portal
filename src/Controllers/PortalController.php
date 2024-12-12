@@ -74,4 +74,8 @@ class PortalController
         }
         return $this->site->getSites();
     }
+
+    public function getSiteByView($view) {
+        return $this->site->getSiteView($view);
+    }
 }

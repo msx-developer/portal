@@ -5,6 +5,16 @@ namespace Msx\Portal\Helpers;
 use Msx\Portal\Database\Connection;
 class FiveliveHelper {
 
+    /**
+     * Generates and returns the HTML script and link tags required for initializing
+     * the Fivelive editing environment. The scripts and stylesheets included are 
+     * necessary for enabling Fivelive's editing capabilities within the portal.
+     * 
+     * The function retrieves the portal's local URL and constructs the necessary 
+     * script and link elements with the correct resource paths.
+     * 
+     * @return string The HTML string containing script and link tags for Fivelive initialization.
+     */
     public static function scriptTop() {
         $fivelive_url = $_SESSION['msx']['url_admin'];
         $cdPortal = $_SESSION['msx']['portal'];
@@ -28,6 +38,15 @@ class FiveliveHelper {
         return $script;
     }
 
+    /**
+     * Generates and returns the HTML script tag required for finalizing the Fivelive
+     * editing environment. The script removes the loading indicator and hides the
+     * loading overlay after the Fivelive editing environment has finished loading.
+     *
+     * @param int $cd_site The code of the current site.
+     *
+     * @return string The HTML string containing the script tag for finalizing Fivelive initialization.
+     */
     public static function scriptBottom($cd_site) {
         $fivelive_url = $_SESSION['msx']['url_admin'];
         $script = "
@@ -40,6 +59,29 @@ class FiveliveHelper {
         return $script;
     }
 
+    /**
+     * Generates and returns the HTML code for enabling Fivelive editing capabilities
+     * for a given material or section.
+     *
+     * The function takes an associative array as its first argument, which should
+     * contain the following keys:
+     *
+     * - cd_matia: The code of the material.
+     * - cd_publi: The code of the publication.
+     * - cd_sesit: The code of the section.
+     * - putips: An array of publication types.
+     * - setips: An array of section types.
+     *
+     * The function will return NULL if the material or section is not enabled for
+     * Fivelive editing or if the required keys are not present in the array.
+     *
+     * @param array $arr The associative array containing the material or section data.
+     * @param string $atributo The name of the field to be edited. If not provided, the
+     *                         function will return the toolbar for the material or
+     *                         section.
+     * @return string|null The HTML code for the Fivelive editing interface or NULL if
+     *                     the material or section is not enabled for Fivelive editing.
+     */
     public static function fivelive($arr, $atributo = NULL){
 
         $fields = array(
@@ -148,6 +190,18 @@ class FiveliveHelper {
         return $bloco;
     }
 
+    /**
+     * Generates a string containing media data attributes based on the provided media ID and publication code.
+     *
+     * Filters the provided media array to find the media with the specified media ID. If a parent media ID
+     * exists, it further filters to retrieve the parent media data. Constructs a string with data attributes
+     * including media ID, default height and width, and combined media information.
+     *
+     * @param string $cd_midia The ID of the media to retrieve data for.
+     * @param array $midias An array of media data, each containing media attributes.
+     * @param string|null $cd_publi The publication code associated with the media.
+     * @return string A string of data attributes for the media, or an empty string if no publication code is provided.
+     */
     public static function getMidia($cd_midia, $midias, $cd_publi) {
         $str = "";
 

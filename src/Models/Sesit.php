@@ -57,7 +57,7 @@ class Sesit {
             $sql .= " LIMIT " . $sesit['qt_sesit_matia'];
         elseif(isset($sesit['qt_sesit_repag']) && $sesit['qt_sesit_repag'] != "" && $sesit['qt_sesit_repag'] > 0)
             $sql .= " LIMIT " . $page * $sesit['qt_sesit_repag'] . ", " . $sesit['qt_sesit_repag'];
-
+        
         if($sesit['ds_sesit_sql'] != "")
             $map = (array) $this->connection->fetchAll($sql);
         else 

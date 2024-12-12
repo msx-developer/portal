@@ -44,4 +44,12 @@ class Site {
         ORDER BY tpblo.id_tpblo_order";
         return (array) $this->connection->fetchAll($sql, [$cd_site]);
     }
+
+    public function getSiteView($view) {
+        $sql = "SELECT templ.*, site.cd_site
+                FROM site 
+                    INNER JOIN templ ON (site.cd_templ_capa = templ.cd_templ)
+                WHERE site.cd_site_url_capa = ?";
+        return (array) $this->connection->fetchAll($sql, ["index.php?id=" . $view]);
+    }
 }

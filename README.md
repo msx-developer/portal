@@ -14,7 +14,7 @@ composer require msx-developer/portal --with-dependencies
 
 ## Configurar
 
-Adicione no arquivo ENV com as configurações de conexão de banco de dados
+Adicione no arquivo ENV com as configurações de conexão de banco de dados e do elasticsearch
 
 ```
 DB_MSX_CONNECTION=mysql
@@ -25,6 +25,12 @@ DB_MSX_USERNAME=user
 DB_MSX_PASSWORD=pass
 DB_MSX_PORTAL=1
 DB_MSX_URL_ADMIN=http://admin.local/
+
+DB_MSX_ELASTICSEARCH_HOST=localhost
+DB_MSX_ELASTICSEARCH_PORT=9200
+DB_MSX_ELASTICSEARCH_PASSWORD=pass
+DB_MSX_ELASTICSEARCH_USER=user
+DB_MSX_ELASTICSEARCH_PREFIX=client_
 ```
 
 ## Exemplo de uso
@@ -155,8 +161,7 @@ Exemplo completo com a implementação dos itens listados acima:
     ```
 
     ```php
-    //layout/news.blade.php
-
+    <!--layout/news.blade.php -->
     <!DOCTYPE html>
     <html>
 
@@ -178,4 +183,128 @@ Exemplo completo com a implementação dos itens listados acima:
         @yield('scriptBottom')
     </body>
     </html>
+    ```
+
+    Funções de busca de matérias com dados do elasticsearch:
+
+    - Busca geral por termos
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+    
+    // termo buscado
+    $texto = $request->input('q');
+    $parametros = ['q' => $texto];
+    $materias = $search->busca($parametros);
+
+    ```
+    - Busca geral por tags
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+    
+    //texto contendo as tags divididas por ','
+    $tags = $request->input('tags');
+    $parametros = ['q' => $tags];
+    $materias = $search->busca($parametros);
+
+    ```
+
+    - Busca geral por autor
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+    
+    //texto contendo os autores divididos por ','
+    $autores = $request->input('autores');
+    $parametros = ['q' => $autores];
+    $materias = $search->busca($parametros);
+
+    ```
+    
+    - Busca por tags relacionadas a um matéria
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+    
+    //texto contendo as tags da matéria divididas por ','
+    $tags = $request->input('tags');
+    //identificador da matéria
+    $id = $request->input('id');
+    $parametros = ['q' => $autores, 'cd_matia' => $id];
+    $materias = $search->busca($parametros);
+
+    ```
+
+    - Outros filtros relacionados as funções acima
+
+    ```php
+    //Nome do site
+    $site = $request->input('site');
+    //Identidicador do site
+    $idSite = $request->input('id');
+    //Número da página
+    $page = $request->input('page');
+    //Quantidade de itens por página
+    $site = $request->input('size');
+
+    $parametros = [
+        'ds_site' => $site,
+        'cd_site' => $cd_site,
+        'qtd' => $size,
+        'page' => $page
+    ];
+    ```
+
+    - Exemplo completo
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+
+    $size = 30; //padrão 10
+    $requestData = $request->all();
+
+    $q = $requestData['q'];
+    $cd_site = $requestData['site'] ?? null;
+    $page = $requestData['page'] ?? 1;
+    $cd_matia = $requestData['id'] ?? null;
+
+    $parametros = compact('q', 'cd_site', 'page', 'cd_matia');
+    
+    $materias = [];
+
+    if ($request->is('search/*')) {
+        $materias = $search->busca($parametros);
+    }
+
+    if ($request->is('tags/*')) {
+        $materias = $search->busca($parametros);
+    }
+
+    if ($request->is('autor/*')) {
+        $materias = $search->busca($parametros);
+    }
+
+    if ($request->is('related/*')) {
+        $materias = $search->busca($parametros);
+    }    
+    ```
+
+    Função de busca de mídias com dados do elasticsearch:
+
+    - Busca por pasta
+
+    ```php
+    use Msx\Portal\Controllers\SearchController;
+    $search = new SearchController();
+    
+    // id da pasta de mídias 
+    $id = $request->input('id');
+    $charges = $search->midia(['cd_fldmd' => $id]);
+
     ```

@@ -4,6 +4,14 @@ namespace Msx\Portal\Helpers;
 
 class MateriaHelper {
 
+    /**
+     * Processes the content of a given string by removing certain HTML tags,
+     * applying a template tag processing, and adjusting paragraph tags with a class.
+     *
+     * @param string $ds_matia The content to be processed, potentially containing HTML tags.
+     * @param mixed|null $modelo An optional model used for template tag processing.
+     * @return string The processed content with specific tags removed or adjusted.
+     */
     public static function processContent($ds_matia, $modelo = null) {
 
         $ds_matia = self::processTemplateTag($ds_matia, $modelo);
@@ -27,6 +35,17 @@ class MateriaHelper {
 
     }
 
+    /**
+     * Processa o conteúdo da matéria para template tag.
+     *
+     * Processa o conteúdo da matéria para template tag, substituindo as tags
+     * <tinymce> por seu respectivo conteúdo.
+     *
+     * @param string $ds_matia conteúdo da matéria.
+     * @param string $modelo   modelo de template tag, desktop, mobile, amp, ia.
+     *
+     * @return string
+     */
     public static function processTemplateTag($ds_matia, $modelo = null) {
 
         if($modelo == null)
@@ -122,6 +141,17 @@ class MateriaHelper {
         return $ds_matia;
     }
 
+    /**
+     * Shortens a URL by removing specific path segments or query strings
+     * based on the provided tag.
+     *
+     * @param string $str The URL string to be shortened.
+     * @param string $tag Optional. Determines the type of shortening to be applied.
+     *                    If "link_conteudo", removes "/_conteudo" from the URL.
+     *                    If "url_capa", removes "index.php?id=" and "/index.php".
+     *                    Defaults to "link_conteudo".
+     * @return string The shortened URL.
+     */
     public static function shortLink($str, $tag = "link_conteudo") {
         if($tag == "link_conteudo")
             $str = str_replace("/_conteudo", "", $str);
@@ -132,6 +162,13 @@ class MateriaHelper {
         return $str;
     }
 
+    /**
+     * Recursively removes all occurrences of a specified HTML/XML tag and its content from a given text.
+     *
+     * @param string $tag  The name of the tag to remove.
+     * @param string $text The text from which the tag and its content should be removed.
+     * @return string The modified text with the specified tag and its content removed.
+     */
     public static function removeStringBetweenTag($tag, $text) {
         $inicio = strpos($text,"<".$tag);
         if($inicio!== false){
@@ -146,6 +183,19 @@ class MateriaHelper {
         return $text;
     }
         
+    /**
+     * Converts a normal string into a scape Editor formatted string.
+     *
+     * This function replaces certain characters in a normal string with
+     * their corresponding ENTITY placeholders. Specifically, it replaces:
+     * - Single quotes (') with ENTITY_apos_ENTITY
+     * - Double quotes (") with ENTITY_quot_ENTITY
+     * - Hash symbols (#) with ENTITY_sharp_ENTITY
+     * - Ampersands (&) with ENTITY_amp_ENTITY
+     *
+     * @param string $string The normal string to be converted.
+     * @return string The converted string with ENTITY placeholders.
+     */
     public static function stringScapeEditorFromNormalString($string){
         $string = str_replace ('\'', 'ENTITY_apos_ENTITY', $string);
         $string = str_replace ('"', 'ENTITY_quot_ENTITY', $string);
@@ -154,6 +204,18 @@ class MateriaHelper {
         return $string;
     }
     
+    /**
+     * Converte uma string em scape Editor para string com entidades html
+     *
+     * Converte uma string em scape Editor para string com entidades html<br>
+     *
+     * Exemplo:<br>
+     *  <?= MateriaHelper::stringEntitiesFromScapeEditor("string em scape Editor"); ?><br>
+     *
+     * @param String $string string em scape Editor
+     * @return String string com entidades html
+     *
+     */
     public static function stringEntitiesFromScapeEditor($string){
         $string = str_replace ('ENTITY_apos_ENTITY', '&apos;', $string);
         $string = str_replace ('ENTITY_quot_ENTITY', '&quot;', $string);
@@ -162,9 +224,73 @@ class MateriaHelper {
         return $string;
     }
     
+    /**
+     * Converte uma string em scape Editor para string normal
+     *
+     * Converte uma string em scape Editor para string normal<br>
+     *
+     * Exemplo:<br>
+     *  <?= MateriaHelper::stringNormalStringFromScapeEditor("string em scape Editor"); ?><br>
+     *
+     * @param String $string string em scape Editor
+     * @return String string normal
+     *
+     */
     public static function stringNormalStringFromScapeEditor($string){
         $string = str_replace ('ENTITY_apos_ENTITY', '\'', $string);
         $string = str_replace ('ENTITY_quot_ENTITY', '"', $string);
         return $string;
+    }
+
+    /**
+     * Converte uma data em portugues (dd/mm/yyyy hh:ii:ss) para ingles (yyyy-mm-dd hh:ii:ss)
+     *
+     * Converte uma data em portugues (dd/mm/yyyy hh:ii:ss) para ingles (yyyy-mm-dd hh:ii:ss)<br>
+     *
+     * Exemplo:<br>
+     *  <?= MateriaHelper::DataBrToEn("10/12/2008"); ?><br>
+     *
+     * @param String $pStrdata Data no formato Portugues
+     * @return String Data no formato Americano
+     *
+     */
+    public static function DataBrToEn($pStrdata) {
+        if (strpos($pStrdata, "/") !== false) {
+            $lStrdata = explode(" ", $pStrdata);
+            $lStrdia = explode("/", $lStrdata[0]);
+            $lStrhora = $lStrdata[1];
+
+            // acrescentado por Jot em 22/12/2010 para validar se a data informada � valida
+            // caso a data não seja válida a função retorna falso
+            //if (!checkdate($lStrdia[1], $lStrdia[0], $lStrdata[2]))
+            //   return false;
+
+            if ($lStrhora == "00:00:00")
+                $lStrhora = "";
+            return trim($lStrdia[2] . "-" . $lStrdia[1] . "-" . $lStrdia[0] . " " . $lStrhora);
+        }
+        else
+            return trim($pStrdata);
+    }
+
+    /**
+     * Converte uma data em ingles (yyyy-mm-dd hh:ii:ss) para portugues (dd/mm/yyyy hh:ii:ss)
+     *
+     * Converte uma data em ingles (yyyy-mm-dd hh:ii:ss) para portugues (dd/mm/yyyy hh:ii:ss)<br>
+     *
+     * Exemplo:<br>
+     *  <?= MateriaHelper::DataEnToBr("2008-12-10 00:00:00"); ?><br>
+     *
+     * @param String $pStrdata Data no formato Ingles
+     * @return String Data no formato Portugues
+     *
+     */
+    public static function DataEnToBr($campo) {
+        $lStrRetValue = $campo;
+        if (strpos($campo, "-") > 0) {
+            $lStrRetValue = substr($campo, 8, 2) . "/" . substr($campo, 5, 2) . "/" . substr($campo, 0, 4) . substr($campo, 10);
+            $lStrRetValue = str_replace("00:00:00", "", $lStrRetValue);
+        }
+        return trim($lStrRetValue);
     }
 }
