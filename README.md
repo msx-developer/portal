@@ -208,7 +208,7 @@ Exemplo completo com a implementação dos itens listados acima:
     //texto contendo as tags divididas por ','
     $tags = $request->input('tags');
     $parametros = ['q' => $tags];
-    $materias = $search->busca($parametros);
+    $materias = $search->tags($parametros);
 
     ```
 
@@ -221,7 +221,7 @@ Exemplo completo com a implementação dos itens listados acima:
     //texto contendo os autores divididos por ','
     $autores = $request->input('autores');
     $parametros = ['q' => $autores];
-    $materias = $search->busca($parametros);
+    $materias = $search->autor($parametros);
 
     ```
     
@@ -236,7 +236,7 @@ Exemplo completo com a implementação dos itens listados acima:
     //identificador da matéria
     $id = $request->input('id');
     $parametros = ['q' => $autores, 'cd_matia' => $id];
-    $materias = $search->busca($parametros);
+    $materias = $search->related($parametros);
 
     ```
 
@@ -283,15 +283,15 @@ Exemplo completo com a implementação dos itens listados acima:
     }
 
     if ($request->is('tags/*')) {
-        $materias = $search->busca($parametros);
+        $materias = $search->tags($parametros);
     }
 
     if ($request->is('autor/*')) {
-        $materias = $search->busca($parametros);
+        $materias = $search->autor($parametros);
     }
 
     if ($request->is('related/*')) {
-        $materias = $search->busca($parametros);
+        $materias = $search->related($parametros);
     }    
     ```
 
