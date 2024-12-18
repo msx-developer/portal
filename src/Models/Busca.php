@@ -229,6 +229,8 @@ class Busca {
         if (isset($page) && $page > 0) {
             $qtd = isset($qtd) ? $qtd : 10;
             $body['from'] = ($page - 1) * $qtd;
+        } else {
+            $page = 1;
         }
 
         $params = [
@@ -239,7 +241,25 @@ class Busca {
         //echo json_encode($params);die;
 
         $result = $client->search($params);
-        return $result['hits'];
+
+        if (isset($result['error'])) {
+            return [];
+        }
+
+        if (!isset($result['hits'])) {
+            return [];
+        }
+
+        $data = [
+            'info' => $terms,
+            'q' => $term,
+            'hits' => $result['hits']['hits'],
+            'total' => $result['hits']['total']['value'],   
+            'qtd' => $body['size'],
+            'page' => $page
+        ];
+
+        return $data;
     }
 
     public function autor($term) {
