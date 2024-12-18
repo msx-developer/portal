@@ -21,6 +21,6 @@
         "ext-pdo": "*",
         "ext-json": "*",
         "smarty/smarty": "^5.4",
-        "elasticsearch/elasticsearch": "7.17"
+        "elasticsearch/elasticsearch": "7.11"
     }
 }
