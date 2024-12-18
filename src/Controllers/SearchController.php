@@ -57,7 +57,7 @@ class SearchController
                         }
                         break;
                     default:
-                        $autores = ($v['ds_autor_slug']) ? $v['ds_autor_slug'] : $v['nm_notia_autor'];
+                        $autores = (isset($v['ds_autor_slug']) && $v['ds_autor_slug'] != null) ? $v['ds_autor_slug'] : $v['nm_notia_autor'];
                         $map[$k]['cod'] = $v['cd_matia'];
                         $map[$k]['url'] = $v['ds_matia_link'];
                         $map[$k]['title'] = $v['ds_matia_titlo'];
