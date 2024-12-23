@@ -299,7 +299,8 @@ class Busca {
                 "ds_autor_curso",
                 "ds_autor_premi",
                 "ds_autor_link",
-                "ds_autor_slug"
+                "ds_autor_slug", 
+                "ds_midia_link"
             ]
 
         ];
