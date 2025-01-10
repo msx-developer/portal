@@ -57,19 +57,21 @@ class SearchController
                             break;
                         default:
                             $autores = (isset($v['ds_autor_slug']) && $v['ds_autor_slug'] != null) ? $v['ds_autor_slug'] : $v['nm_notia_autor'];
-                            $map[$k]['cod'] = $v['cd_matia'];
-                            $map[$k]['url'] = $v['ds_matia_link'];
-                            $map[$k]['title'] = $v['ds_matia_titlo'];
-                            $map[$k]['date'] = $v['dt_matia_publi'];
-                            $map[$k]['channel'] = $v['ds_site'];
-                            $map[$k]['subject'] = $v['ds_matia_assun'];
-                            $map[$k]['description'] = $v['ds_matia_chape'];
-                            $map[$k]['views'] = $v['qt_matia_visua'];
-                            $map[$k]['tags'] = $v['ds_matia_palvr'];
-                            $map[$k]['publish'] = $v['dt_matia_publi'];
-                            $map[$k]['midiaId'] = $v['cd_midia'];
-                            $map[$k]['img'] = $v['ds_midia_link'];
-                            $map[$k]['thumb'] = $v['nm_midia_inter_thumb1'];
+							
+                            $map[$k]['cod'] 		= isset($v['cd_matia']) 			 ? $v['cd_matia'] 				: "";
+                            $map[$k]['url'] 		= isset($v['ds_matia_link']) 		 ? $v['ds_matia_link'] 			: "";
+                            $map[$k]['title'] 		= isset($v['ds_matia_titlo']) 		 ? $v['ds_matia_titlo'] 		: "";
+                            $map[$k]['date'] 		= isset($v['dt_matia_publi']) 		 ? $v['dt_matia_publi'] 		: "";
+                            $map[$k]['channel'] 	= isset($v['ds_site']) 				 ? $v['ds_site'] 				: "";
+                            $map[$k]['subject'] 	= isset($v['ds_matia_assun']) 		 ? $v['ds_matia_assun'] 		: "";
+                            $map[$k]['description'] = isset($v['ds_matia_chape']) 		 ? $v['ds_matia_chape'] 		: "";
+                            $map[$k]['views'] 		= isset($v['qt_matia_visua']) 		 ? $v['qt_matia_visua'] 		: "";
+                            $map[$k]['tags'] 		= isset($v['ds_matia_palvr']) 		 ? $v['ds_matia_palvr'] 		: "";
+                            $map[$k]['publish'] 	= isset($v['dt_matia_publi']) 		 ? $v['dt_matia_publi'] 		: "";
+                            $map[$k]['midiaId'] 	= isset($v['cd_midia']) 			 ? $v['cd_midia'] 				: "";
+                            $map[$k]['img'] 		= isset($v['ds_midia_link']) 		 ? $v['ds_midia_link'] 			: "";
+                            $map[$k]['thumb'] 		= isset($v['nm_midia_inter_thumb1']) ? $v['nm_midia_inter_thumb1'] 	: "";
+
                             $map[$k]['autors'] = $this->busca->autor($autores);
                             break;
                     }
