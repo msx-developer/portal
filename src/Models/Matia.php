@@ -50,6 +50,13 @@ class Matia {
         if(isset($params['cd_matia']) == false || $params['cd_matia'] == null || count($params['cd_matia']) == 0) 
             return [];
 
+		if(isset($params["cd_sesit"]) && $params["cd_sesit"] != ""){
+			$sesit = (array) $this->connection->fetchAll("SELECT id_sesit_order, qt_sesit_repag, qt_sesit_matia FROM sesit WHERE cd_sesit = ?", [$params["cd_sesit"]])[0];
+			$params["id_sesit_order"] = $sesit["id_sesit_order"];
+			$params["qt_sesit_repag"] = $sesit["qt_sesit_repag"];
+			$params["qt_sesit_matia"] = $sesit["qt_sesit_matia"];
+		}
+
         $ids     = $params['cd_matia']; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
        
@@ -160,6 +167,8 @@ class Matia {
 				if(!preg_match('/INNER JOIN notia ON/',$sql)){
 					$select = "notia.* , matia.* ";
 					$from = " INNER JOIN notia ON (notia.cd_matia = matia.cd_matia) ";
+					$from .= " INNER JOIN publi ON (publi.cd_matia = matia.cd_matia) ";
+					$from .= " INNER JOIN sesit ON (publi.cd_sesit = sesit.cd_sesit) ";
 				}
                break; 
             case 4://agenda
@@ -196,22 +205,27 @@ class Matia {
                 break;
         }
 
+        if($from != "")
+            $sql = str_replace("FROM matia ", "FROM matia {$from}", $sql);
+
         if(( isset($params['cd_matia']) == false || $params['cd_matia'] == "") && ( isset($params['preview']) == false || $params['preview'] != 1)){
             $where .= " AND matia.cd_matia_statu in (2) ";
         }
 
-        if( (isset($params['cd_matia']) == false || $params['cd_matia'] == "") && preg_match('/INNER JOIN publi ON/',$sql)){
+        if(preg_match('/INNER JOIN publi ON/', $sql)){
             $where .= " AND now() >= publi.dt_publi_ini 
-            AND (now() <= publi.dt_publi_fim OR publi.dt_publi_fim is null) 
-            AND 
-                (((
-                            sesit.dt_sesit_publi is null OR 
-                            matia.dt_matia_incl > date_sub(sesit.dt_sesit_publi, interval ifnull(sesit.qt_sesit_publi,1) day)
-                        ) 
-                        AND sesit.id_sesit_otimi = 1
-                    ) 
-                    OR sesit.id_sesit_otimi is null
+				AND (now() <= publi.dt_publi_fim OR publi.dt_publi_fim is null) 
+				AND 
+					(((
+							sesit.dt_sesit_publi is null OR 
+							matia.dt_matia_incl > date_sub(sesit.dt_sesit_publi, interval ifnull(sesit.qt_sesit_publi,1) day)
+						) 
+						AND sesit.id_sesit_otimi = 1
+					) 
+					OR sesit.id_sesit_otimi is null
                 ) ";
+			if(isset($params["cd_sesit"]) && $params["cd_sesit"] != "")
+				$where .= " AND publi.cd_sesit = {$params["cd_sesit"]} ";
         }
 
         switch ($id_sesit_order) {
@@ -267,9 +281,6 @@ class Matia {
         if($select != "")
             $sql = str_replace("SELECT * ", "SELECT {$select}", $sql);
 
-        if($from != "")
-            $sql = str_replace("FROM matia ", "FROM matia {$from}", $sql);
-
         if($where != "")
             $sql = str_replace(" WHERE matia.cd_matia IN ", "WHERE 1 = 1 {$where} AND matia.cd_matia IN ", $sql);
 
@@ -278,7 +289,7 @@ class Matia {
 
         if($limit != "" && preg_match("/LIMIT/i", $sql) == 0)
             $sql .= $limit; 
-
+		echo "<!-- TESTE IGOR2 {$sql} -->";
         return $sql;
     }
 
