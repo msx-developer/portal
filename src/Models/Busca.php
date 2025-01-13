@@ -356,8 +356,8 @@ class Busca {
                     'must_not' => [
                         'bool' => [ 
                             'must' => [
-                                'exists' => [ 'field' => 'dt_midia_exclu' ],   
-                                'exists' => [ 'field' => 'cd_midia_pai' ]                            
+                                'exists' => [ 'field' => 'dt_midia_exclu' ]   
+                                ,'exists' => [ 'field' => 'cd_midia_pai' ]                            
                             ]
                         ]
                     ]
@@ -404,9 +404,53 @@ class Busca {
             'body' => $body 
         ];        
 
-        //echo json_encode($params);die;
         $result = $client->search($params);
-        //print_r($result);die;
+
+        return $result['hits'];
+    }
+
+    public function midiasFilhas($cd_midia) {
+        $client = ElasticSearchClient::getInstance();   
+
+        $client = ElasticSearchClient::getInstance();
+        $index = ElasticSearchClient::getIndices()[ElasticSearchClient::$indice_midia];
+
+        $body = [
+            'query' => [
+                'bool' => [
+                    'must' => [
+                        'match' => [
+                            'cd_poral' => $_SESSION['msx']['portal']                            
+                        ],
+                        'match' => [
+                            'cd_midia_pai' => $cd_midia
+                        ]
+                    ],
+                    'must_not' => [
+                        'bool' => [ 
+                            'must' => [
+                                'exists' => [ 'field' => 'dt_midia_exclu' ]                            
+                            ]
+                        ]
+                    ]
+                ]            
+            ],
+            "size" => 30,
+            "sort" => [
+                "_score" => [ "order" => "desc"],
+                'dt_midia_incl_year' => ['order' => 'desc'],
+                'dt_midia_incl_month' => ['order' => 'desc'],
+                'dt_midia_incl_day' => ['order' => 'desc']
+            ]       
+        ];
+
+        $params = [ 
+            'index' => $index,
+            'body' => $body 
+        ];        
+
+        $result = $client->search($params);
+        
         return $result['hits'];
     }
 }

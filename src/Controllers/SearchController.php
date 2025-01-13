@@ -50,9 +50,14 @@ class SearchController
     
                     switch ($tipo) {
                         case 'midia':
-                            if(isset($v['cd_midia_pai']) && $v['cd_midia_pai'] != null) {
-                                $map[$k]['midmas']["{$v['cd_midia_w']}x{$v['cd_midia_h']}"] = $v;
-                                unset($map[$k]);
+                            $filhas = $this->busca->midiasFilhas($v['cd_midia']);
+                            if(is_array($filhas) && count($filhas) > 0) {
+                                foreach ($filhas as $kF => $filha) {
+                                    if(isset($filha['_source'])) {
+                                        $j = $filha['_source'];
+                                        $map[$k]['midias']["{$j['cd_midia_w']}x{$j['cd_midia_h']}"] = $j;                                   
+                                    }
+                                }
                             }
                             break;
                         default:
