@@ -4,6 +4,7 @@ namespace Msx\Portal\Models;
 
 use Msx\Portal\Database\Connection;
 use Msx\Portal\Helpers\MateriaHelper;
+use Msx\Portal\Models\Sesit;
 class Matia {
     private $connection;
     const DEFAULT_RELATIONS = [
@@ -60,10 +61,13 @@ class Matia {
         $ids     = $params['cd_matia']; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
        
-        $sql = "SELECT * 
-        FROM matia 
-        WHERE matia.cd_matia IN ({$inQuery})";
-
+		$sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0];
+		if ($sesit["ds_sesit_sql"] != ""){
+			$sql = (new Sesit)->sqlReplaces($sesit);
+		} else{
+			$sql = "SELECT * FROM matia WHERE matia.cd_matia IN ({$inQuery})";
+			$sql = $this->queryMatia($sql, $params);
+		}
         $sql = $this->queryMatia($sql, $params);
         $map = (array) $this->connection->fetchAll($sql, $ids);
 
@@ -167,8 +171,10 @@ class Matia {
 				if(!preg_match('/INNER JOIN notia ON/',$sql)){
 					$select = "notia.* , matia.* ";
 					$from = " INNER JOIN notia ON (notia.cd_matia = matia.cd_matia) ";
-					$from .= " INNER JOIN publi ON (publi.cd_matia = matia.cd_matia) ";
-					$from .= " INNER JOIN sesit ON (publi.cd_sesit = sesit.cd_sesit) ";
+					if (isset($params["cd_sesit"]) && $params["cd_sesit"] != "") {
+						$from .= " LEFT JOIN publi ON (publi.cd_matia = matia.cd_matia) ";
+						$from .= " LEFT JOIN sesit ON (publi.cd_sesit = sesit.cd_sesit) ";
+					}
 				}
                break; 
             case 4://agenda
@@ -212,7 +218,7 @@ class Matia {
             $where .= " AND matia.cd_matia_statu in (2) ";
         }
 
-        if(preg_match('/INNER JOIN publi ON/', $sql)){
+        if (isset($params["cd_sesit"]) && $params["cd_sesit"] != "") {
             $where .= " AND now() >= publi.dt_publi_ini 
 				AND (now() <= publi.dt_publi_fim OR publi.dt_publi_fim is null) 
 				AND 
@@ -223,9 +229,7 @@ class Matia {
 						AND sesit.id_sesit_otimi = 1
 					) 
 					OR sesit.id_sesit_otimi is null
-                ) ";
-			if(isset($params["cd_sesit"]) && $params["cd_sesit"] != "")
-				$where .= " AND publi.cd_sesit = {$params["cd_sesit"]} ";
+                ) AND publi.cd_sesit = {$params["cd_sesit"]} ";
         }
 
         switch ($id_sesit_order) {
@@ -273,10 +277,11 @@ class Matia {
 
         if($qt_sesit_matia != "" && $qt_sesit_matia > 0)
             $limit = " LIMIT " . $qt_sesit_matia;
-        else
-            if($qt_sesit_repag != "" && $qt_sesit_repag > 0)
-                $limit = " LIMIT " . (($params['p'] == "" || $params['p'] == 0 ? 1 : $params['p']) - 1) * $qt_sesit_repag . ", " . $qt_sesit_repag;
-        
+        else if($qt_sesit_repag != "" && $qt_sesit_repag > 0){
+			$pagina = (!isset($params['p']) || $params['p'] == 0 || $params['p'] == "" ? 1 : $params['p']) - 1;
+			$limit = " LIMIT " . $pagina * $qt_sesit_repag . ", " . $qt_sesit_repag;
+		}
+
 
         if($select != "")
             $sql = str_replace("SELECT * ", "SELECT {$select}", $sql);
@@ -289,7 +294,7 @@ class Matia {
 
         if($limit != "" && preg_match("/LIMIT/i", $sql) == 0)
             $sql .= $limit; 
-		echo "<!-- TESTE IGOR2 {$sql} -->";
+		
         return $sql;
     }
 
