@@ -51,14 +51,15 @@ class SearchController
                     switch ($tipo) {
                         case 'midia':
                             $filhas = $this->busca->midiasFilhas($v['cd_midia']);
-                            if(is_array($filhas) && count($filhas) > 0) {
-                                foreach ($filhas as $kF => $filha) {
-                                    if(isset($filha['_source'])) {
+                            if (is_array($filhas["hits"]) && count($filhas["hits"]) > 0) {
+                                foreach ($filhas["hits"] as $kF => $filha) {
+                                    if (isset($filha['_source'])) {
                                         $j = $filha['_source'];
                                         $map[$k]['midias']["{$j['cd_midia_w']}x{$j['cd_midia_h']}"] = $j;                                   
                                     }
                                 }
-                            }
+                            } else
+								$map[$k]['midias'] = [];
                             break;
                         default:
                             $autores = (isset($v['ds_autor_slug']) && $v['ds_autor_slug'] != null) ? $v['ds_autor_slug'] : $v['nm_notia_autor'];
