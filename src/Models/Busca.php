@@ -353,33 +353,37 @@ class Busca {
                             'cd_poral' => $_SESSION['msx']['portal']
                         ]
                     ],
-                    'must_not' => [
-                        'bool' => [ 
-                            'must' => [
-                                'exists' => [ 'field' => 'dt_midia_exclu' ]   
-                                ,'exists' => [ 'field' => 'cd_midia_pai' ]                            
+                    "must_not" => [
+                        [
+                            "exists" => [
+                                "field" => "dt_midia_exclu"
+                            ]
+                        ],
+                        [
+                            "exists" => [
+                                "field" => "cd_midia_pai"
                             ]
                         ]
                     ]
-                ]            
+                ]
             ],
             "size" => 30,
             "sort" => [
-                "_score" => [ "order" => "desc"],
+                "_score" => ["order" => "desc"],
                 'dt_midia_incl_year' => ['order' => 'desc'],
                 'dt_midia_incl_month' => ['order' => 'desc'],
                 'dt_midia_incl_day' => ['order' => 'desc']
-            ]       
+            ]
         ];
 
         if(isset($cd_fldmd) && $cd_fldmd != '') {
-
             $body['query']['bool']['must'] =
-                array_merge($body['query']['bool']['must'], [
-                    'match' => ['cd_fldmd' => $cd_fldmd]
-                ]);
+                array_merge(
+                    [$body['query']['bool']['must']]
+                    ,[['match' => ['cd_fldmd' => $cd_fldmd]]]
+            );
 
-            $doby['sort'] = [
+            $body['sort'] = [
                 "_score" => [
                     "order" => "desc"
                 ],
@@ -388,6 +392,14 @@ class Busca {
                 'dt_midia_incl_month' => ['order' => 'desc'],
                 'dt_midia_incl_day' => ['order' => 'desc']
             ]; 
+        }
+        
+        if (isset($cd_midia) && $cd_midia != '') {
+            $body['query']['bool']['must'] =
+                array_merge(
+                    [$body['query']['bool']['must']]
+                    ,[["match" => ["cd_midia" => $cd_midia]]]
+            );
         }
 
         if (isset($qtd) && $qtd > 0) {
@@ -402,8 +414,9 @@ class Busca {
         $params = [ 
             'index' => $index,
             'body' => $body 
-        ];        
+        ];   
 
+        //echo json_encode($body);exit;
         $result = $client->search($params);
 
         return $result['hits'];
@@ -419,18 +432,16 @@ class Busca {
             'query' => [
                 'bool' => [
                     'must' => [
-                        'match' => [
-                            'cd_poral' => $_SESSION['msx']['portal']                            
+                        [
+                            'match' => ['cd_poral' => $_SESSION['msx']['portal']]
                         ],
-                        'match' => [
-                            'cd_midia_pai' => $cd_midia
+                        [
+                            'match' => ['cd_midia_pai' => $cd_midia]
                         ]
                     ],
-                    'must_not' => [
-                        'bool' => [ 
-                            'must' => [
-                                'exists' => [ 'field' => 'dt_midia_exclu' ]                            
-                            ]
+                    "must_not" => [
+                        "exists" => [
+                            "field" => "dt_midia_exclu"
                         ]
                     ]
                 ]            
@@ -448,7 +459,7 @@ class Busca {
             'index' => $index,
             'body' => $body 
         ];        
-
+        // echo json_encode($body);exit;
         $result = $client->search($params);
         
         return $result['hits'];
