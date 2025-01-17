@@ -17,7 +17,7 @@ if(function_exists('getenv')) {
     $elasticsearch_user = getenv('DB_MSX_ELASTICSEARCH_USER');
     $elasticsearch_prefix = getenv('DB_MSX_ELASTICSEARCH_PREFIX');
 
-    if((!isset($_SESSION['msx']['portal']) || $_SESSION['portal'] != $portal) && $portal > 0) {
+    if((!isset($_SESSION['msx']['portal']) || $_SESSION['msx']['portal'] != $portal) && $portal > 0) {
         session_start();
         $_SESSION['msx']['portal'] = $portal;
         $_SESSION['msx']['url_admin'] = $url_admin;
