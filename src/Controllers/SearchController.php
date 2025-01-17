@@ -2,13 +2,16 @@
 
 namespace Msx\Portal\Controllers;
 
+use Msx\Portal\Database\Connection;
 use Msx\Portal\Helpers\RequestSanitizerHelper;
 use Msx\Portal\Models\Busca;
 class SearchController  
 {
     private $busca;
+    private $connection;
     public function __construct() {
         $this->busca = new Busca();
+        $this->connection = Connection::getInstance();
     }
      public function busca($request) {
         return $this->matia($request, 'busca');
@@ -55,11 +58,11 @@ class SearchController
                                 foreach ($filhas["hits"] as $kF => $filha) {
                                     if (isset($filha['_source'])) {
                                         $j = $filha['_source'];
-                                        $map[$k]['midias']["{$j['cd_midia_w']}x{$j['cd_midia_h']}"] = $j;                                   
+                                        $map[$k]['crops']["{$j['cd_midia_w']}x{$j['cd_midia_h']}"] = $j;                                   
                                     }
                                 }
                             } else
-								$map[$k]['midias'] = [];
+								$map[$k]['crops'] = [];
                             break;
                         default:
                             $autores = (isset($v['ds_autor_slug']) && $v['ds_autor_slug'] != null) ? $v['ds_autor_slug'] : $v['nm_notia_autor'];
@@ -79,6 +82,12 @@ class SearchController
                             $map[$k]['thumb'] 		= isset($v['nm_midia_inter_thumb1']) ? $v['nm_midia_inter_thumb1'] 	: "";
 
                             $map[$k]['autors'] = $this->busca->autor($autores);
+							$midmas = $this->connection->fetchAll('SELECT * FROM midma WHERE cd_matia = ?', [$v['cd_matia']]);
+							$map[$k]['midias'] = [];
+							foreach ($midmas as $midma) {
+								$midia = $this->midia(["cd_midia" => $midma["cd_midia"]])['data'][0];
+								$map[$k]['midias'][$midia["id"]] = $midia; 
+							}
                             break;
                     }
                 }
