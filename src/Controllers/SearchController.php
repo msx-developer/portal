@@ -2,16 +2,16 @@
 
 namespace Msx\Portal\Controllers;
 
-use Msx\Portal\Database\Connection;
+// use Msx\Portal\Database\Connection;
 use Msx\Portal\Helpers\RequestSanitizerHelper;
 use Msx\Portal\Models\Busca;
 class SearchController  
 {
     private $busca;
-    private $connection;
+    // private $connection;
     public function __construct() {
         $this->busca = new Busca();
-        $this->connection = Connection::getInstance();
+        // $this->connection = Connection::getInstance();
     }
      public function busca($request) {
         return $this->matia($request, 'busca');
@@ -82,12 +82,14 @@ class SearchController
                             $map[$k]['thumb'] 		= isset($v['nm_midia_inter_thumb1']) ? $v['nm_midia_inter_thumb1'] 	: "";
 
                             $map[$k]['autors'] = $this->busca->autor($autores);
-							$midmas = $this->connection->fetchAll('SELECT * FROM midma WHERE cd_matia = ?', [$v['cd_matia']]);
+							// $midmas = $this->connection->fetchAll('SELECT * FROM midma WHERE cd_matia = ?', [$v['cd_matia']]);
 							$map[$k]['midias'] = [];
-							foreach ($midmas as $midma) {
-								$midia = $this->midia(["cd_midia" => $midma["cd_midia"]])['data'][0];
-								$map[$k]['midias'][$midia["id"]] = $midia; 
-							}
+							// foreach ($midmas as $midma) {
+								// $midia = $this->midia(["cd_midia" => $midma["cd_midia"]])['data'][0];
+								// $map[$k]['midias'][$midia["id"]] = $midia; 
+							// }
+							$midia = $this->midia(["cd_midia" => $v['cd_midia']])['data'][0];
+							$map[$k]['midias'][$midia["id"]] = $midia; 
                             break;
                     }
                 }
