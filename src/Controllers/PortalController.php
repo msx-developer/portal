@@ -33,7 +33,7 @@ class PortalController
         $ids = array_column($publis, 'cd_matia');
         $params = ['cd_matia' => $ids, 'cd_sesit' => $cd_sesit];
 
-        if(isset($_REQUEST['p']) && filter_var($_REQUEST['p'], FILTER_VALIDATE_INT) !== false) {
+        if(isset($_REQUEST['p']) && filter_var($_REQUEST['p'], FILTER_VALIDATE_INT) !== false) 
             $params['p'] = (int) $_REQUEST['p'];
 
         $matias = $this->matia->setWith(['midmas','site'])->getMatias($params);        
