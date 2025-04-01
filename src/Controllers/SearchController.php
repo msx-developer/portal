@@ -82,13 +82,17 @@ class SearchController
                             $map[$k]['thumb'] 		= isset($v['nm_midia_inter_thumb1']) ? $v['nm_midia_inter_thumb1'] 	: "";
 
                             $map[$k]['autors'] = $this->busca->autor($autores);
-							// $midmas = $this->connection->fetchAll('SELECT * FROM midma WHERE cd_matia = ?', [$v['cd_matia']]);
 							$map[$k]['midias'] = [];
 							// foreach ($midmas as $midma) {
 								// $midia = $this->midia(["cd_midia" => $midma["cd_midia"]])['data'][0];
 								// $map[$k]['midias'][$midia["id"]] = $midia; 
 							// }
-							$midia = $this->midia(["cd_midia" => $v['cd_midia']])['data'][0];
+
+							$midia = $this->midia(["cd_midia" => $v['cd_midia']]);
+                            if(isset($midia['data']) && is_array($midia['data']) && count($midia['data']) > 0)
+                                $midia = $midia['data'][0];
+                            else
+                                $midia = null;
 							$map[$k]['midias'][$midia["id"]] = $midia; 
                             break;
                     }
