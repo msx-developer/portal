@@ -64,6 +64,7 @@ class Matia {
 		$sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0];
 		if ($sesit["ds_sesit_sql"] != ""){
 			$sql = (new Sesit)->sqlReplaces($sesit);
+            $ids = null;
 		} else{
 			$sql = "SELECT * FROM matia WHERE matia.cd_matia IN ({$inQuery})";
 			$sql = $this->queryMatia($sql, $params);

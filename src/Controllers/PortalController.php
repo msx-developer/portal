@@ -31,7 +31,12 @@ class PortalController
         } 
         $publis = $this->sesit->getPublis($cd_sesit);
         $ids = array_column($publis, 'cd_matia');
-        $matias = $this->matia->setWith(['midmas','site'])->getMatias(['cd_matia' => $ids, 'cd_sesit' => $cd_sesit]);        
+        $params = ['cd_matia' => $ids, 'cd_sesit' => $cd_sesit];
+
+        if(isset($_REQUEST['p']) && filter_var($_REQUEST['p'], FILTER_VALIDATE_INT) !== false) {
+            $params['p'] = (int) $_REQUEST['p'];
+
+        $matias = $this->matia->setWith(['midmas','site'])->getMatias($params);        
         if(isset($matias) && count($matias) > 0){
             foreach($matias as $key => $value){
                 $indice = array_search($value['cd_matia'], array_column($publis, 'cd_matia'));
