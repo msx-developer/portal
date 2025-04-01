@@ -31,7 +31,6 @@ class Busca {
         ],
         'size' => 10,
         'sort' => [
-            '_score' => ['order' => 'desc'],
             'dt_matia_publi_year' => ['order' => 'desc'],
             'dt_matia_publi_month' => ['order' => 'desc'],
             'dt_matia_publi_day' => ['order' => 'desc'],
@@ -124,7 +123,6 @@ class Busca {
                         ]);
                 
                     $body['sort'] = [
-                        '_score' => ['order' => 'desc'],
                         'qt_matia_visua' => ['order' => 'desc'],
                         'dt_matia_publi_year' => ['order' => 'desc'],
                         'dt_matia_publi_month' => ['order' => 'desc'],
@@ -369,7 +367,6 @@ class Busca {
             ],
             "size" => 30,
             "sort" => [
-                "_score" => ["order" => "desc"],
                 'dt_midia_incl_year' => ['order' => 'desc'],
                 'dt_midia_incl_month' => ['order' => 'desc'],
                 'dt_midia_incl_day' => ['order' => 'desc']
@@ -384,9 +381,6 @@ class Busca {
             );
 
             $body['sort'] = [
-                "_score" => [
-                    "order" => "desc"
-                ],
                 "dt_midia_edcao" => ["order" => "desc"],
                 'dt_midia_incl_year' => ['order' => 'desc'],
                 'dt_midia_incl_month' => ['order' => 'desc'],
@@ -448,7 +442,6 @@ class Busca {
             ],
             "size" => 30,
             "sort" => [
-                "_score" => [ "order" => "desc"],
                 'dt_midia_incl_year' => ['order' => 'desc'],
                 'dt_midia_incl_month' => ['order' => 'desc'],
                 'dt_midia_incl_day' => ['order' => 'desc']
