@@ -123,7 +123,6 @@ class Busca {
                         ]);
                 
                     $body['sort'] = [
-                        'qt_matia_visua' => ['order' => 'desc'],
                         'dt_matia_publi_year' => ['order' => 'desc'],
                         'dt_matia_publi_month' => ['order' => 'desc'],
                         'dt_matia_publi_day' => ['order' => 'desc'],
