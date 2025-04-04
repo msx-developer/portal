@@ -372,6 +372,8 @@ class Busca {
             ]
         ];
 
+
+
         if(isset($cd_fldmd) && $cd_fldmd != '') {
             $body['query']['bool']['must'] =
                 array_merge(
@@ -383,8 +385,11 @@ class Busca {
                 "dt_midia_edcao" => ["order" => "desc"],
                 'dt_midia_incl_year' => ['order' => 'desc'],
                 'dt_midia_incl_month' => ['order' => 'desc'],
-                'dt_midia_incl_day' => ['order' => 'desc']
+                'dt_midia_incl_day' => ['order' => 'desc'],
+                'cd_midia' => ['order' => 'desc']
             ]; 
+        } else {
+            
         }
         
         if (isset($cd_midia) && $cd_midia != '') {
