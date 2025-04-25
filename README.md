@@ -308,3 +308,55 @@ Exemplo completo com a implementação dos itens listados acima:
     $charges = $search->midia(['cd_fldmd' => $id]);
 
     ```
+
+    Funções para listagem de notícias via xml
+
+    - Dependência: como existem xml's que é formatado via .xsl, adicionar o sitemap.xml na pasta public (raíz da navegação) 
+
+    - sitemap de notícias recentes (/sitemap.xml)
+
+    ```php
+    Route::get('sitemap.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => $type ?? 'sitemap'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('sitemap');
+
+    ```
+
+    - sitemap de notícias recentes no formato para googlenews (/sitemap-news.xml)
+
+    ```php
+    Route::get('sitemap-news.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => $type ?? 'googlenews'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('googlenews');
+
+    ```
+
+    - sitemap de notícias recentes (/sitemap-rss.xml)
+
+    ```php
+    Route::get('sitemap-rss.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => $type ?? 'rss'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('rss');
+
+    ```
+
+    - sitemap index de sitemaps de notícias (/sitemap-index.xml)
+
+    ```php
+    Route::get('sitemap-index.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => $type ?? 'index'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('rss');
+
+    ```

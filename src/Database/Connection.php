@@ -120,4 +120,12 @@ class Connection{
         return $map;
     }
 
+    public function fetch($sql, $params = [])
+    {
+        $stmt = $this->query($sql, $params);
+        $map = (array) $stmt->fetch();
+        $stmt->closeCursor();
+        return $map;
+    }
+
 }

@@ -61,8 +61,9 @@ class Matia {
         $ids     = $params['cd_matia']; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
        
-		$sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0];
-		if ($sesit["ds_sesit_sql"] != ""){
+        if(isset($params["cd_sesit"]) && $params["cd_sesit"] != "")
+		    $sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0];
+		if (isset($sesit) && $sesit["ds_sesit_sql"] != ""){
 			$sql = (new Sesit)->sqlReplaces($sesit);
             $ids = null;
 		} else{
