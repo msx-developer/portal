@@ -357,6 +357,18 @@ Exemplo completo com a implementação dos itens listados acima:
         $params = ['type' => $type ?? 'index'];
         $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
         return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
-    })->name('rss');
+    })->name('index');
+
+    ```
+
+    - sitemap index de sitemaps de notícias com paginação (/sitemap-index-([0-9]*).xml)
+
+    ```php
+    Route::get('/sitemap/map/{page}.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => $type ?? 'index'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->where('page', '[0-9]+')->name('indexmap');
 
     ```

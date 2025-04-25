@@ -117,6 +117,7 @@ class Sitemap {
     }
     
     public function getSitemapElastic($params, $size, $page, $terms = null) {
+
         $result = $this->client->search($params);
 
         if (isset($result['error'])) {
@@ -220,6 +221,36 @@ class Sitemap {
             ]);          
         }
 
+        if($type == "indexmap") {
+            $aux = $body;
+
+            unset($aux['size']);
+            unset($aux['from']);
+            unset($aux['sort']);
+            unset($aux['_source']);
+
+            $total = $this->client->count([
+                'index' => $this->indexName,
+                'body' => $aux
+            ]);
+
+            $body['size'] = 1000;
+
+            $nrows = (int) ($total['count'] / $body['size']) + 1;
+            $body['from'] = ($nrows - $page) * 1000;
+            $body['sort'] = ['dt_matia_publi' => ['order' => 'desc']];
+
+        } else {
+            $qtd = isset($qtd) ? $qtd : 1000;
+            $body['size'] = $qtd;
+            $body['from'] = ($page - 1) * $qtd;
+        }
+
+        $params = [
+            'index' => $this->indexName,
+            'body' => $body
+        ];
+
         return $this->getSitemapElastic($params, $body['size'], $page);
     }
 
@@ -245,6 +276,22 @@ class Sitemap {
         }        
 
         switch ($type) {
+            case 'indexmap':
+                $sql = "SELECT
+                CONCAT_WS('', 
+                '<url>', 
+                    '<loc>', poral.ds_poral_url, REPLACE(matia.ds_matia_path, '/index.html', '/'), '</loc>',
+                    '<lastmod>', date_format(matia.dt_matia_publi, '%Y-%m-%dT%H:%i:%s-03:00'), '</lastmod>',
+                    '<changefreq>daily</changefreq>',
+                    '<priority>0.9</priority>',
+                    if(matia.cd_midia is not null and midia.id_midia_tipo = 2, CONCAT_WS('', '<image:image><image:loc>', midia.ds_midia_link, '</image:loc></image:image>'), ''),
+                '</url>'
+                ) as x, ";
+                
+                $orderBy = " ORDER BY matia.dt_matia_publi DESC ";
+                $limit = " LIMIT 1000 ";
+
+                break;
             case 'sitemap':
                 $sql = "SELECT
 					CONCAT_WS('', 
@@ -333,7 +380,7 @@ class Sitemap {
         $sql .= $this->selectWhere();
         $sql .= $orderBy;
         $sql .= $limit;
-
+        
         $this->map = (array) $this->connection->fetchAll($sql);
 
         return $this;
@@ -433,12 +480,16 @@ class Sitemap {
 				$content .= '<updated>' . date("Y-m-d\TH:i:s-03:00") . '</updated>' . PHP_EOL;
 				$content .= '<id>' . $poral["ds_poral_url"] . '/</id>' . PHP_EOL;
 			} else {
-                if(preg_match("/dev.(msx|news).local/i", $_SERVER['HTTP_HOST'])) {
-                    $content .= "<?xml-stylesheet type=\"text/xsl\" href=\"http://" . $_SERVER['HTTP_HOST'] . "/sitemap.xsl\"?>\n";
+                if($type != "indexmap") {
+                    if(preg_match("/dev.(msx|news).local/i", $_SERVER['HTTP_HOST'])) {
+                        $content .= "<?xml-stylesheet type=\"text/xsl\" href=\"http://" . $_SERVER['HTTP_HOST'] . "/sitemap.xsl\"?>\n";
+                    } else {
+                        $content .= "<?xml-stylesheet type=\"text/xsl\" href=\"" . $poral["ds_poral_url"] . "/sitemap.xsl\"?>\n";
+                    }
+                    $content .= "<urlset xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd\" xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
                 } else {
-                    $content .= "<?xml-stylesheet type=\"text/xsl\" href=\"" . $poral["ds_poral_url"] . "/sitemap.xsl\"?>\n";
-                }
-                $content .= "<urlset xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:news=\"http://www.google.com/schemas/sitemap-news/0.9\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\" xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd\" xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
+                    $content .= "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http://www.w3.org/1999/xhtml\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\">\n";
+                }   
             }
 				
             if(isset($this->map) && count($this->map) > 0) {
