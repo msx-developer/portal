@@ -30,17 +30,19 @@ class Busca {
                     ]
                 ],
                 'minimum_should_match' => 1,
-                'should' => [
-                    'bool' => [
-                        'must_not' => [
-                            [
-                                'exists' => [
-                                    'field' => 'cd_matia_pai'
-                                ]
-                            ]
-                        ]
-                    ]
-                ],
+				'should' => [
+					[
+						'bool' => [
+							'must_not' => [
+								[
+									'exists' => [
+										'field' => 'cd_matia_pai'
+									]
+								]
+							]
+						]
+					]
+				],
             ],
         ],
         'size' => 10,
@@ -133,7 +135,7 @@ class Busca {
                     $cd_matia =  $cd_matia != "" ? $cd_matia : 0;
                     $body['query']['bool']['must_not'] = 
                         array_merge($body['query']['bool']['must_not'], [
-                            'match' => ['cd_matia' => $cd_matia]
+                            ['match' => ['cd_matia' => $cd_matia]]
                         ]);
                 
                     $body['sort'] = [
@@ -159,33 +161,33 @@ class Busca {
         if (isset($_SESSION['msx']['portal'])) {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => ['cd_poral' => $_SESSION['msx']['portal']]
+                    ['match' => ['cd_poral' => intval($_SESSION['msx']['portal'])]]
                 ]);
         }
 
         if (isset($cd_site) && $cd_site != '') {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => ['cd_site' => $cd_site]
+                    ['match' => ['cd_site' => $cd_site]]
                 ]);
         }
 
         if (isset($nm_notia_autor) && $nm_notia_autor != '') {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => ['nm_notia_autor' => $nm_notia_autor]
+                    ['match' => ['nm_notia_autor' => $nm_notia_autor]]
                 ]);
         }
 
         if (isset($ds_site) && $ds_site != '') {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => [
+                    ['match' => [
                         'ds_site_arvor' => [
                             'query' => "'$ds_site'",
                             'operator' => 'and'
                         ]
-                    ]
+                    ]]
                 ]);
         }
 
@@ -222,14 +224,14 @@ class Busca {
         if (isset($cd_matia) && $cd_matia != '' && $tipo != "related") {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => ['cd_matia' => $cd_matia]
+                    ['match' => ['cd_matia' => $cd_matia]]
                 ]);
         }
 
         if (isset($cd_templ_matia) && $cd_templ_matia != '') {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
-                    'match' => ['cd_templ_matia' => $cd_templ_matia]
+                    ['match' => ['cd_templ_matia' => $cd_templ_matia]]
                 ]);
         }
 
@@ -248,8 +250,6 @@ class Busca {
             'index' => $index,
             'body' => $body
         ];
-
-        //echo json_encode($params);die;
 
         $result = $client->search($params);
 
