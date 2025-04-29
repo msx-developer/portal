@@ -11,18 +11,32 @@ class Busca {
         'query' => [
             'bool' => [
                 'must_not' => [
-                    'match' => ['cd_matia_statu' => 3],
-                    'match' => ['cd_matia' => 0],
+                    [
+                        'match' => [
+                            'cd_matia_statu' => 3
+                        ]
+                    ],
+                    [
+                        'match' => [
+                            'cd_matia' => 0
+                        ]
+                    ]
                 ],
                 'must' => [
-                    'match' => ['cd_matia_statu' => 2],
+                    [
+                        'match' => [
+                            'cd_matia_statu' => 2
+                        ]
+                    ]
                 ],
                 'minimum_should_match' => 1,
                 'should' => [
                     'bool' => [
                         'must_not' => [
-                            'exists' => [
-                                'field' => 'cd_matia_pai'
+                            [
+                                'exists' => [
+                                    'field' => 'cd_matia_pai'
+                                ]
                             ]
                         ]
                     ]
