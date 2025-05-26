@@ -105,7 +105,7 @@ class Busca {
             case 'busca':
                 $body['query']['bool']['should'] = [
                     'query_string' => [
-                        'query' => "'$term'",
+                        'query' => "\"$term\"",
                         'fields' => ['ds_matia_titlo', 'ds_matia_chape'],
                         "quote_field_suffix" => ".exact",
                     ],
@@ -149,7 +149,7 @@ class Busca {
             case 'autor':
                 $body['query']['bool']['should'] = [
                     'query_string' => [
-                        'query' => "'$term'",
+                        'query' => "\"$term\"",
                         'fields' => ['nm_notia_autor', 'ds_autor_slug'],
                         "quote_field_suffix" => ".exact",
                     ],
@@ -184,7 +184,7 @@ class Busca {
                 array_merge($body['query']['bool']['must'], [
                     ['match' => [
                         'ds_site_arvor' => [
-                            'query' => "'$ds_site'",
+                            'query' => "\"$ds_site\"",
                             'operator' => 'and'
                         ]
                     ]]
@@ -265,7 +265,7 @@ class Busca {
             'info' => $terms,
             'q' => $term,
             'hits' => $result['hits']['hits'],
-            'total' => $result['hits']['total']['value'],   
+            'total' => $result['hits']['total']['value'],
             'qtd' => $body['size'],
             'page' => $page
         ];
