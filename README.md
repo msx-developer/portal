@@ -372,3 +372,37 @@ Exemplo completo com a implementação dos itens listados acima:
     })->where('page', '[0-9]+')->name('indexmap');
 
     ```
+
+    - sitemap de notícias por site recentes (/(.*)/sitemap.xml)
+
+    ```php
+    Route::get('/{site}/sitemap.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => 'sitemap', 'site' => $site];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->where('site', '.+')->name('sitemapSite');
+
+    ```
+
+    - sitemap de notícias do dia (/sitemap-day.xml)
+     ```php
+    Route::get('sitemap-day.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => 'sitemap', 'date' => 'today'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('sitemapDay');
+
+    ```
+
+    - sitemap de notícias das últimas 48 horas (/sitemap-yesterday.xml)
+     ```php
+    Route::get('sitemap-yesterday.xml', function (Request $request) {
+        $type = $request->input('type');
+        $params = ['type' => 'sitemap', 'date' => 'yesterday'];
+        $xmlContent = (new \Msx\Portal\Controllers\SitemapController())->sitemap($params);
+        return response($xmlContent, 200)->header('Content-Type', 'application/xml; charset=utf-8');  
+    })->name('sitemapYesterday');
+
+    ```

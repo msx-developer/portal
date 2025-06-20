@@ -190,6 +190,13 @@ class Sitemap {
                 ]);
         }
 
+        if (isset($site) && $site != '') {
+            $body['query']['bool']['must'] =
+                array_merge($body['query']['bool']['must'], [
+                    ['match' => ['ds_site' => $site]]
+                ]);
+        }
+
         $body['size'] = 1000;
         $body['sort'] = ['dt_matia_publi' => ['order' => 'desc']];
 
@@ -417,6 +424,23 @@ class Sitemap {
                     $ids = implode(',', $ids);
                 }
                 $sql .= " WHERE matia.cd_matia IN ($ids) ";
+
+                if(isset($date) && $date != "") {
+                    switch ($date) {
+                        case 'today':
+                            $sql .= " AND DATE(matia.dt_matia_publi) = CURDATE() ";
+                            break;
+                        case 'yesterday':
+                            $sql .= " AND DATE(matia.dt_matia_publi) >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) ";
+                            break;
+                        case 'lastweek':
+                            $sql .= " AND DATE(matia.dt_matia_publi) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) ";
+                            break;
+                        case 'lastmonth':
+                            $sql .= " AND DATE(matia.dt_matia_publi) >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) ";
+                            break;
+                    }
+                }
             }
         }        
 
