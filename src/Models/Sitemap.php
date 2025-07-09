@@ -197,6 +197,41 @@ class Sitemap {
                 ]);
         }
 
+		if (isset($arvore) && $arvore != '') {
+			if (is_array($arvore))
+				$arvore = implode(" OR ", $arvore);
+
+			$body['query']['bool']['must'] = array_merge(
+				$body['query']['bool']['must'],
+				[
+					[
+						"query_string" => [
+							"default_field" => "ds_site_arvor",
+							"query" => $arvore
+						]
+					]
+				]
+			);
+		}
+
+		if (isset($notArvore) && $notArvore != '') {
+			if (is_array($notArvore))
+				$notArvore = implode(" OR ", $notArvore);
+
+			$body['query']['bool']['should']['bool']['must_not'] =
+				array_merge(
+					$body['query']['bool']['should']['bool']['must_not'],
+					[
+						[
+							"query_string" => [
+								"default_field" => "ds_site_arvor",
+								"query" => $notArvore
+							]
+						]
+					]
+				);
+		}
+
         $body['size'] = 1000;
         $body['sort'] = ['dt_matia_publi' => ['order' => 'desc']];
 
