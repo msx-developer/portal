@@ -30,6 +30,7 @@ class Sesit {
             $sql = $this->sqlReplaces($sesit);           
         } else {
             $sql = "SELECT *
+                , publi.cd_midia AS cd_midia
             FROM publi 
                 INNER JOIN sesit ON (publi.cd_sesit = sesit.cd_sesit) 
             WHERE publi.cd_sesit = ?
