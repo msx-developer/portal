@@ -23,7 +23,7 @@ class RequestSanitizerHelper
             // Se o valor for um array, aplica a sanitização recursivamente
             if (is_array($value)) {
                 $sanitizedData[$key] = self::sanitize($value, $dbCon);
-            } else {
+            } elseif(!empty($value)) {
                 // Remove espaços ao redor do valor
                 $value = trim($value);
 

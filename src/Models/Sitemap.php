@@ -200,14 +200,17 @@ class Sitemap {
 		if (isset($arvore) && $arvore != '') {
 			if (is_array($arvore))
 				$arvore = implode(" OR ", $arvore);
+            else 
+                $arvore = mb_strtolower(trim(preg_replace('/\s/', '-', $arvore)));
+
 
 			$body['query']['bool']['must'] = array_merge(
 				$body['query']['bool']['must'],
 				[
 					[
 						"query_string" => [
-							"default_field" => "ds_site_arvor",
-							"query" => $arvore
+							"default_field" => "ds_site_arvor", 
+							"query" => "\"$arvore\""
 						]
 					]
 				]
@@ -452,6 +455,7 @@ class Sitemap {
             if($type == "index") {
                 $sql = "";
             } else {
+                $ids = '';
                 if (isset($resultElastic['hits']) && count($resultElastic['hits']) > 0) {
                     $ids = array_map(function($item) {
                         return $item['_source']['cd_matia'];
