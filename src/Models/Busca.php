@@ -337,10 +337,20 @@ class Busca {
         if (isset($result['hits']['hits']) && count($result['hits']['hits']) > 0) {
             foreach ($result['hits']['hits'] as $key => $value) { 
                 $v = $value['_source'];
-                if(isset($arr[$v['nm_autor']])) 
+                if(isset($arr[$v['nm_autor']])) {
                     $arr[$v['nm_autor']] = array_merge($arr[$v['nm_autor']], $v);
-                else 
+                    foreach ($arr[$v['nm_autor']] as $k_autor => &$v_autor) {
+                        if (!is_null($v[$k_autor])) {
+                            $v_autor = $v[$k_autor];
+                        }
+                    }
+                } else {
                     $arr[$v['nm_autor']] = $v;
+                }
+
+                if ($v['ds_midia_link'] == "") {
+                    $arr["cd_autmts"][] = (int)$value["_id"];
+                }
             }
             foreach($arr as $value) {
                 $map[] = $value;
