@@ -338,10 +338,20 @@ class Busca {
             foreach ($result['hits']['hits'] as $key => $value) { 
                 $v = $value['_source'];
                 if(isset($arr[$v['nm_autor']])) {
-                    $arr[$v['nm_autor']] = array_merge($arr[$v['nm_autor']], $v);
-                    foreach ($arr[$v['nm_autor']] as $k_autor => &$v_autor) {
-                        if (!is_null($v[$k_autor])) {
-                            $v_autor = $v[$k_autor];
+                    // CORREÇÃO: prioriza valores NÃO NULOS/VAZIOS
+                    foreach ($v as $campo => $valor) {
+                        if (!empty($valor) || $valor === 0 || $valor === false) {
+                            // Prioriza valores não vazios/não nulos
+                            $arr[$v['nm_autor']][$campo] = $valor;
+                        }
+                        elseif (is_array($valor) && !empty($valor)) {
+                            if (!isset($arr[$v['nm_autor']][$campo])) {
+                                $arr[$v['nm_autor']][$campo] = [];
+                            }
+                            $arr[$v['nm_autor']][$campo] = array_unique(array_merge(
+                                $arr[$v['nm_autor']][$campo], 
+                                $valor
+                            ));
                         }
                     }
                 } else {

@@ -49,7 +49,7 @@ class MateriaHelper {
     public static function processTemplateTag($ds_matia, $modelo = null) {
 
         if($modelo == null)
-            $modelo == 'desktop';
+            $modelo = 'desktop';
 
         $smarty = new \Smarty\Smarty;
         $matia = new \Msx\Portal\Models\Matia;
