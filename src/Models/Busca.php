@@ -221,7 +221,7 @@ class Busca {
             //]);
         }
 
-        if (isset($cd_matia) && $cd_matia != '' && $tipo != "related") {
+        if (isset($cd_matia) && $cd_matia != '' && $cd_matia != '0' && $tipo != "related") {
             $body['query']['bool']['must'] =
                 array_merge($body['query']['bool']['must'], [
                     ['match' => ['cd_matia' => $cd_matia]]
@@ -286,11 +286,15 @@ class Busca {
         $client = ElasticSearchClient::getInstance();
         $index = ElasticSearchClient::getIndices()[ElasticSearchClient::$indice_autor];
 
+        $strAutores = str_replace(",", " OR ", $term);
+
         $body = [
             'query' => [
-                'query_string' => [
-                    'query' => str_replace(",", " OR ", $term),
-                    'fields' => ['nm_autor', 'ds_autor_slug']
+                'bool' => [
+                    'should' => [
+                        ["match_phrase" => ["nm_autor" => ["query" => $strAutores]]],
+                        ["term" => ["ds_autor_slug" => ["value" => $strAutores]]]
+                    ]
                 ]
             ],
             "size" => 50,
@@ -329,7 +333,6 @@ class Busca {
             'index' => $index,
             'body' => $body
         ];
-
 
         $result = $client->search($params);
 
