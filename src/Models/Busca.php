@@ -2,8 +2,10 @@
 
 namespace Msx\Portal\Models;
 
+use Msx\Portal\Database\Connection;
 use Msx\Portal\Database\ElasticSearchClient;
 use Msx\Portal\Helpers\MateriaHelper;
+use PDO;
 
 class Busca {
 
@@ -285,6 +287,7 @@ class Busca {
 
         $client = ElasticSearchClient::getInstance();
         $index = ElasticSearchClient::getIndices()[ElasticSearchClient::$indice_autor];
+        $conn = Connection::getInstance();
 
         $strAutores = str_replace(",", " OR ", $term);
 
@@ -315,7 +318,11 @@ class Busca {
                 "ds_autor_premi",
                 "ds_autor_link",
                 "ds_autor_slug", 
-                "ds_midia_link"
+                "ds_midia_link",
+                "cd_autor"
+            ],
+            "sort" => [
+                'cd_matia' => ['order' => 'desc']
             ]
 
         ];
@@ -337,30 +344,51 @@ class Busca {
         $result = $client->search($params);
 
         $map = $arr = [];
+        $isDbDataFetched = true;
         if (isset($result['hits']['hits']) && count($result['hits']['hits']) > 0) {
+
             foreach ($result['hits']['hits'] as $key => $value) { 
                 $v = $value['_source'];
-                if(isset($arr[$v['nm_autor']])) {
-                    // CORREÇÃO: prioriza valores NÃO NULOS/VAZIOS
-                    foreach ($v as $campo => $valor) {
-                        if (!empty($valor) || $valor === 0 || $valor === false) {
-                            // Prioriza valores não vazios/não nulos
-                            $arr[$v['nm_autor']][$campo] = $valor;
-                        }
-                        elseif (is_array($valor) && !empty($valor)) {
-                            if (!isset($arr[$v['nm_autor']][$campo])) {
-                                $arr[$v['nm_autor']][$campo] = [];
-                            }
-                            $arr[$v['nm_autor']][$campo] = array_unique(array_merge(
-                                $arr[$v['nm_autor']][$campo], 
-                                $valor
-                            ));
+
+                if($isDbDataFetched) {
+                    if( $v['cd_autor'] > 0 && !isset($arr[$v['nm_autor']]) ) {
+                        $queryAutor = "SELECT autor.*
+                                            , CASE WHEN autor.cd_midia IS NOT NULL 
+                                                THEN (SELECT ds_midia_link FROM midia WHERE midia.cd_midia = autor.cd_midia)
+                                                END AS ds_midia_link		 
+                                        FROM autor 
+                                        WHERE autor.cd_autor = :cd_autor";
+                        $mapAutor = $conn->fetch(
+                            $queryAutor,
+                            ['cd_autor' => $v['cd_autor']],
+                            \PDO::FETCH_ASSOC
+                        );
+                        if( is_array($mapAutor) && count($mapAutor) > 0 ) {
+                            $arr[$mapAutor['nm_autor']] = $mapAutor;
                         }
                     }
                 } else {
-                    $arr[$v['nm_autor']] = $v;
+                    if(isset($arr[$v['nm_autor']])) {
+                        // CORREÇÃO: prioriza valores NÃO NULOS/VAZIOS
+                        foreach ($v as $campo => $valor) {
+                            if (!empty($valor) || $valor === 0 || $valor === false) {
+                                // Prioriza valores não vazios/não nulos
+                                $arr[$v['nm_autor']][$campo] = $valor;
+                            }
+                            elseif (is_array($valor) && !empty($valor)) {
+                                if (!isset($arr[$v['nm_autor']][$campo])) {
+                                    $arr[$v['nm_autor']][$campo] = [];
+                                }
+                                $arr[$v['nm_autor']][$campo] = array_unique(array_merge(
+                                    $arr[$v['nm_autor']][$campo], 
+                                    $valor
+                                ));
+                            }
+                        }
+                    } else {
+                        $arr[$v['nm_autor']] = $v;
+                    }
                 }
-
                 if ($v['ds_midia_link'] == "") {
                     $arr["cd_autmts"][] = (int)$value["_id"];
                 }

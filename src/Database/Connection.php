@@ -120,10 +120,10 @@ class Connection{
         return $map;
     }
 
-    public function fetch($sql, $params = [])
+    public function fetch($sql, $params = [], $fetchMode = PDO::FETCH_DEFAULT)
     {
         $stmt = $this->query($sql, $params);
-        $map = (array) $stmt->fetch();
+        $map = (array) $stmt->fetch($fetchMode);
         $stmt->closeCursor();
         return $map;
     }
