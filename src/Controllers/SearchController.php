@@ -82,6 +82,16 @@ class SearchController
                             $map[$k]['thumb'] 		= isset($v['nm_midia_inter_thumb1']) ? $v['nm_midia_inter_thumb1'] 	: "";
 
                             $map[$k]['autors'] = $this->busca->autor($autores);
+							if($map[$k]['autors'] == null && $v['nm_notia_autor'] != null) {
+								$arrAuthors = explode(",", $v['nm_notia_autor']);
+								$map[$k]['autors'] = array_map(function($autor) {
+									return [
+										"nm_autor" => trim($autor),
+										"ds_autor_slug" => null
+										];
+								}, $arrAuthors);
+							}
+
 							$map[$k]['midias'] = [];
 
 							$midia = $this->midia(["cd_midia" => $v['cd_midia']]);

@@ -425,7 +425,7 @@ class Sitemap {
         $sql .= $this->selectWhere();
         $sql .= $orderBy;
         $sql .= $limit;
-        
+        //echo $sql; exit();
         $this->map = (array) $this->connection->fetchAll($sql);
 
         return $this;
