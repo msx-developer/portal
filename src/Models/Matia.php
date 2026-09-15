@@ -343,12 +343,12 @@ class Matia {
 
 
     public function getMidiasByMidias($cd_midia_list){
-
+		
         if(isset($cd_midia_list) == false || count($cd_midia_list) == 0) 
             return [];
         
         $ids     = $cd_midia_list; 
-        $inQuery = implode(',', array_fill(0, count($ids), '?'));
+        $inQuery = (is_array($ids)) ? implode(',', array_fill(0, count($ids), '?')) : $ids;
 
         $sql = "SELECT 
 				*, 
