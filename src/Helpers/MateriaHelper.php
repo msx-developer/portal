@@ -149,7 +149,7 @@ class MateriaHelper {
                             $tagContent['matias'][$keymatias] = $mapMatia;
                             $tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
                             $tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
-                            $tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) ) ? $mapMidia['ds_midia_link'] : '';
+                            $tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) && isset($mapMidia['ds_midia_link']) ) ? $mapMidia['ds_midia_link'] : '';
 							$tagContent['matias'][$keymatias]['ds_matia_link'] = ( $mapMatia['ds_matia_link'] != "" ) ? $mapMatia['ds_matia_link'] : str_replace('/_conteudo', '', $mapSite['ds_poral_url'] . $mapMatia['ds_matia_path']);
 						}
 					}
