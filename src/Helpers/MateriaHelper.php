@@ -127,32 +127,46 @@ class MateriaHelper {
                 if($tag['id_tetag_templ_tipo'] == '1'){ //smarty    
                     if($tagContent['id_tetag_galer'] == '1'){
                          if(count($tagContent['midias']) > 0) {  
-                            foreach ( $tagContent['midias'] as $keyMidias => $valueMidias) {
-                                $tagContent['midias'][$keyMidias] = $matia->getMidiasByMidias($valueMidias);
-                            }
+                            $map = $matia->getMidiasByMidias($tagContent['midias']);
+							if (count($map) > 0) {
+								$arr = $filhas = array();
+								foreach ($map as $value) {
+									$midiaPai = ($value['cd_midia_pai'] == "" ? $value['cd_midia'] : $value['cd_midia_pai']);
+									$filhas[$midiaPai]["{$value['cd_midia_w']}x{$value['cd_midia_h']}"] = $value;
+								}
+								foreach ($map as $value) {
+									$midiaPai = ($value['cd_midia_pai'] == "" ? $value['cd_midia'] : $value['cd_midia_pai']);
+									$arr[$midiaPai] = $value;
+									$arr[$midiaPai]["midias"] = $filhas[$midiaPai];
+								}
+								$tagContent['midias'] = $arr;
+							}
+							
                         }
-                    } 
+                    } else {
+						if(isset($tagContent['matias']) && $tagContent['matias'] > 0) {
+							foreach ( $tagContent['matias'] as $keymatias => $valuematias) {
+								$mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]])[0];
+								$mapSite = $matia->getSite($valuematias)[0];
+								if($mapMatia['cd_midia'] != "") {
+									$mapMidia = $matia->getMidmas($mapMatia['cd_matia']);
+									$itemMidiaMatia = $mapMidia[$mapMatia['cd_midia']];
+									$itemMidiaMatia = array_merge($itemMidiaMatia, $mapMidia[$mapMatia['cd_midia']]['midias']);
+									unset($itemMidiaMatia['midias']);
+									$tagContent['midias'][$mapMatia['cd_matia']] = $itemMidiaMatia;
+								}
+								$tagContent['matias'][$keymatias] = $mapMatia;
+								$tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
+								$tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
+								$tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) && isset($mapMidia['ds_midia_link']) ) ? $mapMidia['ds_midia_link'] : '';
+								$tagContent['matias'][$keymatias]['ds_matia_link'] = ( $mapMatia['ds_matia_link'] != "" ) ? $mapMatia['ds_matia_link'] : str_replace('/_conteudo', '', $mapSite['ds_poral_url'] . $mapMatia['ds_matia_path']);
+							}
+						}
+					}
 					if($tag['id_tetag_tipo'] == 2){ 
 						$tagContent['midia'] = $tagContent;
 					}
-                    if($tagContent['matias'] > 0) {
-                        foreach ( $tagContent['matias'] as $keymatias => $valuematias) {
-                            $mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]])[0];
-                            $mapSite = $matia->getSite($valuematias)[0];
-                            if($mapMatia['cd_midia'] != "") {
-                                $mapMidia = $matia->getMidmas($mapMatia['cd_matia']);
-								$itemMidiaMatia = $mapMidia[$mapMatia['cd_midia']];
-								$itemMidiaMatia = array_merge($itemMidiaMatia, $mapMidia[$mapMatia['cd_midia']]['midias']);
-								unset($itemMidiaMatia['midias']);
-								$tagContent['midias'][$mapMatia['cd_matia']] = $itemMidiaMatia;
-							}
-                            $tagContent['matias'][$keymatias] = $mapMatia;
-                            $tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
-                            $tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
-                            $tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) && isset($mapMidia['ds_midia_link']) ) ? $mapMidia['ds_midia_link'] : '';
-							$tagContent['matias'][$keymatias]['ds_matia_link'] = ( $mapMatia['ds_matia_link'] != "" ) ? $mapMatia['ds_matia_link'] : str_replace('/_conteudo', '', $mapSite['ds_poral_url'] . $mapMatia['ds_matia_path']);
-						}
-					}
+                    
 
                     $smarty->clearCache("string:" . $templateTag);
                     $smarty->caching = false;
@@ -160,8 +174,10 @@ class MateriaHelper {
                     	$smarty->assign("item", $tagContent);
 					if(isset($tagContent['matias']))
                     	$smarty->assign("conteudos", $tagContent["matias"]);
-					if(isset($tagContent['midias']))
+					if(isset($tagContent['midias'])) {
 						$smarty->assign("midias", $tagContent["midias"]);
+						$smarty->assign("galerias", $tagContent["midias"]);
+					}
 					if(isset($tagContent['midia']))
 						$smarty->assign("midia", $tagContent["midia"]);
                     $templateTag = $smarty->fetch("string:" . $templateTag);

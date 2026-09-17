@@ -344,7 +344,7 @@ class Matia {
 
     public function getMidiasByMidias($cd_midia_list){
 		
-        if(isset($cd_midia_list) == false || !is_array($cd_midia_list) || count($cd_midia_list) == 0) 
+        if(isset($cd_midia_list) == false || (is_array($cd_midia_list) && count($cd_midia_list) == 0)) 
             return [];
         
         $ids     = $cd_midia_list; 
