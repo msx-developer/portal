@@ -52,18 +52,18 @@ class Matia {
             return [];
 
 		if(isset($params["cd_sesit"]) && $params["cd_sesit"] != ""){
-			$sesit = (array) $this->connection->fetchAll("SELECT id_sesit_order, qt_sesit_repag, qt_sesit_matia FROM sesit WHERE cd_sesit = ?", [$params["cd_sesit"]])[0];
-			$params["id_sesit_order"] = $sesit["id_sesit_order"];
-			$params["qt_sesit_repag"] = $sesit["qt_sesit_repag"];
-			$params["qt_sesit_matia"] = $sesit["qt_sesit_matia"];
+			$sesit = (array) ($this->connection->fetchAll("SELECT id_sesit_order, qt_sesit_repag, qt_sesit_matia FROM sesit WHERE cd_sesit = ?", [$params["cd_sesit"]])[0] ?? []);
+			$params["id_sesit_order"] = $sesit["id_sesit_order"] ?? null;
+			$params["qt_sesit_repag"] = $sesit["qt_sesit_repag"] ?? null;
+			$params["qt_sesit_matia"] = $sesit["qt_sesit_matia"] ?? null;
 		}
 
         $ids     = $params['cd_matia']; 
         $inQuery = implode(',', array_fill(0, count($ids), '?'));
        
         if(isset($params["cd_sesit"]) && $params["cd_sesit"] != "")
-		    $sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0];
-		if (isset($sesit) && $sesit["ds_sesit_sql"] != ""){
+		    $sesit = $this->connection->fetchAll('SELECT * FROM sesit WHERE cd_sesit = ?', [$params["cd_sesit"]])[0] ?? null;
+		if (!empty($sesit["ds_sesit_sql"])){
 			$sql = (new Sesit)->sqlReplaces($sesit);
             $ids = null;
 		} else{

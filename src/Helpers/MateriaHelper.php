@@ -144,23 +144,36 @@ class MateriaHelper {
 							
                         }
                     } else {
-						if(isset($tagContent['matias']) && $tagContent['matias'] > 0) {
+						if(!empty($tagContent['matias']) && is_array($tagContent['matias'])) {
 							foreach ( $tagContent['matias'] as $keymatias => $valuematias) {
-								$mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]])[0];
-								$mapSite = $matia->getSite($valuematias)[0];
-								if($mapMatia['cd_midia'] != "") {
-									$mapMidia = $matia->getMidmas($mapMatia['cd_matia']);
-									$itemMidiaMatia = $mapMidia[$mapMatia['cd_midia']];
-									$itemMidiaMatia = array_merge($itemMidiaMatia, $mapMidia[$mapMatia['cd_midia']]['midias']);
-									unset($itemMidiaMatia['midias']);
-									$tagContent['midias'][$mapMatia['cd_matia']] = $itemMidiaMatia;
+								$mapMatia = $matia->getMatias(['cd_matia' => [$valuematias]])[0] ?? null;
+								$mapSite = $matia->getSite($valuematias)[0] ?? null;
+
+								// Matéria relacionada não encontrada (excluída/despublicada): remove do bloco
+								if(empty($mapMatia) || empty($mapSite)) {
+									unset($tagContent['matias'][$keymatias]);
+									continue;
 								}
+
+								$itemMidiaMatia = null;
+								if(!empty($mapMatia['cd_midia'])) {
+									$mapMidia = $matia->getMidmas($mapMatia['cd_matia']);
+									if(isset($mapMidia[$mapMatia['cd_midia']])) {
+										$itemMidiaMatia = $mapMidia[$mapMatia['cd_midia']];
+										$itemMidiaMatia = array_merge($itemMidiaMatia, $itemMidiaMatia['midias'] ?? []);
+										unset($itemMidiaMatia['midias']);
+										$tagContent['midias'][$mapMatia['cd_matia']] = $itemMidiaMatia;
+									}
+								}
+
+								$mapMatia['ds_poral_url'] = $mapSite['ds_poral_url'];
+								$mapMatia['ds_site'] = $mapSite['ds_site'];
+								$mapMatia['ds_midia_link'] = $itemMidiaMatia['ds_midia_link'] ?? '';
+								$mapMatia['ds_matia_link'] = !empty($mapMatia['ds_matia_link']) ? $mapMatia['ds_matia_link'] : str_replace('/_conteudo', '', $mapSite['ds_poral_url'] . $mapMatia['ds_matia_path']);
+
 								$tagContent['matias'][$keymatias] = $mapMatia;
-								$tagContent['matias'][$keymatias]['ds_poral_url'] =  $mapSite['ds_poral_url'];
-								$tagContent['matias'][$keymatias]['ds_site'] =  $mapSite['ds_site'];
-								$tagContent['matias'][$keymatias]['ds_midia_link'] = ( $mapMatia['cd_midia'] != "" && isset($mapMidia) && isset($mapMidia['ds_midia_link']) ) ? $mapMidia['ds_midia_link'] : '';
-								$tagContent['matias'][$keymatias]['ds_matia_link'] = ( $mapMatia['ds_matia_link'] != "" ) ? $mapMatia['ds_matia_link'] : str_replace('/_conteudo', '', $mapSite['ds_poral_url'] . $mapMatia['ds_matia_path']);
 							}
+							$tagContent['matias'] = array_values($tagContent['matias']);
 						}
 					}
 					if($tag['id_tetag_tipo'] == 2){ 
